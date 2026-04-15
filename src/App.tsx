@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Sun, Moon, Umbrella, Wrench, Eye, Box, Cpu, X, Mail, Send, Phone } from 'lucide-react';
+import { Sun, Moon, Umbrella, Wrench, Eye, Box, Cpu, X, Mail, Send, Phone, Users } from 'lucide-react';
 
 // --- Theme Toggle Hook ---
 const useTheme = () => {
@@ -25,7 +25,6 @@ const useTheme = () => {
 
   return { theme, toggleTheme };
 };
-
 // --- Contact Modal Component ---
 const ContactModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   useEffect(() => {
@@ -43,7 +42,7 @@ const ContactModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
           onClick={onClose}
         >
           <motion.div
@@ -51,34 +50,34 @@ const ContactModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="relative w-full max-w-md rounded-3xl bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl shadow-2xl border border-gray-200 dark:border-gray-700 p-8"
+            className="relative w-full max-w-md rounded-3xl bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 p-8"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-200/80 dark:hover:bg-gray-700/80 transition-colors"
               aria-label="Close"
             >
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5 text-gray-700 dark:text-gray-300" />
             </button>
 
             <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
               Request a Demo
             </h3>
-            <p className="text-gray-600 dark:text-gray-300 mb-8">
+            <p className="text-gray-700 dark:text-gray-200 mb-8">
               Our team is ready to show you how Smart Shadow can transform your outdoor space.
             </p>
 
             <div className="space-y-5">
               <a
                 href="mailto:hello@smartshadow.com"
-                className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                className="flex items-center gap-4 p-4 rounded-2xl bg-gray-100 dark:bg-gray-900/70 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors group"
               >
-                <div className="p-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+                <div className="p-2 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
                   <Mail className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">Email</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Email</div>
                   <div className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
                     hello@smartshadow.com
                   </div>
@@ -86,31 +85,31 @@ const ContactModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
               </a>
 
               <a
-                href="https://t.me/smartshadow"
+                href="https://t.me/suntrasher"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                className="flex items-center gap-4 p-4 rounded-2xl bg-gray-100 dark:bg-gray-900/70 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors group"
               >
-                <div className="p-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+                <div className="p-2 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
                   <Send className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">Telegram</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Telegram</div>
                   <div className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                    @smartshadow
+                    @suntrasher
                   </div>
                 </div>
               </a>
 
               <a
                 href="tel:+1234567890"
-                className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                className="flex items-center gap-4 p-4 rounded-2xl bg-gray-100 dark:bg-gray-900/70 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors group"
               >
-                <div className="p-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+                <div className="p-2 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
                   <Phone className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">Phone</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Phone</div>
                   <div className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
                     +1 (234) 567-890
                   </div>
@@ -248,7 +247,7 @@ function App() {
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80"
+            src="/images/hero.jpg"
             alt="Beach umbrella"
             className="w-full h-full object-cover"
           />
@@ -286,20 +285,40 @@ function App() {
 
       <StickyShowcase />
 
-      {/* The Team Section */}
-      <section className="py-24 px-6 md:px-8 bg-white dark:bg-black">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-center mb-16 text-gray-900 dark:text-white">
-            Built by Engineers.
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <TeamCard name="Anton Goryainov" role="Mechanical Rotation System" icon={Wrench} />
-            <TeamCard name="Konstantin Lishik" role="Optical Sensors" icon={Eye} />
-            <TeamCard name="Alexander Petryaev" role="Enclosure & Materials" icon={Box} />
-            <TeamCard name="Ivan Turubar" role="Microcontroller Firmware" icon={Cpu} />
+{/* The Team Section with Team Photo */}
+<section className="py-24 px-6 md:px-8 bg-white dark:bg-black">
+  <div className="max-w-7xl mx-auto">
+    <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-center mb-12 text-gray-900 dark:text-white">
+      Built by Engineers.
+    </h2>
+
+    {/* Team Photo */}
+    <div className="mb-16">
+      <div className="relative rounded-3xl overflow-hidden h-[500px] md:h-[600px] border border-gray-200 dark:border-gray-700">
+        <img
+          src="/images/team.jpeg"
+          alt="Smart Shadow Team"
+          className="w-full h-full object-cover"
+        />
+        {/* Dark pill background behind the caption */}
+        <div className="absolute bottom-8 left-8">
+          <div className="px-6 py-3 rounded-full bg-black/70 backdrop-blur-sm">
+            <span className="text-white text-xl md:text-2xl font-medium">
+              The Smart Shadow Team
+            </span>
           </div>
         </div>
-      </section>
+      </div>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <TeamCard name="Anton Goryainov" role="Mechanical Rotation System" icon={Wrench} />
+      <TeamCard name="Konstantin Lishik" role="Optical Sensors" icon={Eye} />
+      <TeamCard name="Alexander Petryaev" role="Enclosure & Materials" icon={Box} />
+      <TeamCard name="Ivan Turubar" role="Microcontroller Firmware" icon={Cpu} />
+    </div>
+  </div>
+</section>
 
       {/* Use Cases Section */}
       <section className="py-24 px-6 md:px-8 bg-gray-50 dark:bg-gray-950">
@@ -310,22 +329,26 @@ function App() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             <div className="relative rounded-3xl overflow-hidden h-80 md:h-96 group">
               <img
-                src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80"
+                src="/images/hotel.jpeg"
                 alt="Hotel terrace"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
               <div className="absolute inset-0 bg-black/20 flex items-end p-8">
-                <h3 className="text-3xl font-semibold text-white">Hotel Terraces</h3>
+                <div className="px-6 py-3 rounded-full bg-black/50 backdrop-blur-sm">
+                    <h3 className="text-3xl font-semibold text-white">Hotel Terraces</h3>
+                </div>
               </div>
             </div>
             <div className="relative rounded-3xl overflow-hidden h-80 md:h-96 group">
               <img
-                src="https://images.unsplash.com/photo-1533636721331-7d7e4d3e5e3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80"
+                src="/images/beach.jpeg"
                 alt="Beach club"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
               <div className="absolute inset-0 bg-black/20 flex items-end p-8">
-                <h3 className="text-3xl font-semibold text-white">Beach Clubs</h3>
+                <div className="px-6 py-3 rounded-full bg-black/50 backdrop-blur-sm">
+                    <h3 className="text-3xl font-semibold text-white">Beach Clubs</h3>
+                </div>
               </div>
             </div>
           </div>
