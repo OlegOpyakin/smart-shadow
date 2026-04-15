@@ -5,5 +5,5 @@ import react from '@vitejs/plugin-react';
 // то base должен быть "/smart-shadow/". Для кастомного домена smartshadow.su оставьте "/".
 export default defineConfig({
   plugins: [react()],
-  base: '/', // ← измените на "/smart-shadow/" если репозиторий называется иначе
+  base: '/smart-shadow/', // ← измените на "/smart-shadow/" если репозиторий называется иначе
 });
