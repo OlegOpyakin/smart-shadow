@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Дополнительные глобальные стили для плавных переходов темы */
+* {
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Убираем стандартную обводку, но сохраняем accessibility */
+:focus-visible {
+  outline: 2px solid #0071e3;
+  outline-offset: 2px;
+}
+
+/* Базовый сглаживающий шрифт */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
