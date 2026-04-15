@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Sun, Moon, Umbrella, Wrench, Eye, Box, Cpu, X, Mail, Send, Phone, Users } from 'lucide-react';
+import { Sun, Moon, Umbrella, Wrench, Eye, Box, Cpu, X, Mail, Send, Phone } from 'lucide-react';
 
 // --- Theme Toggle Hook ---
 const useTheme = () => {
