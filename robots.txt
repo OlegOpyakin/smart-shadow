@@ -1,0 +1,10 @@
+# https://www.robotstxt.org/
+
+# Allow all crawlers full access
+User-agent: *
+
+# Prevent indexing of sensitive or non-public areas
+Disallow:
+
+# Sitemap file
+Sitemap: https://smart-shadow.ru/sitemap.xml
