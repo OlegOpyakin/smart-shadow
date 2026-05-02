@@ -65,7 +65,7 @@ const translations = {
     role1: 'Механическая система поворота',
     role2: 'Оптические датчики',
     role3: 'Корпус и материалы',
-    role4: 'ПО микроконтроллера',
+    role4: 'Встроенное ПО микроконтроллера',
     useCasesTitle: 'Где комфорт встречается с технологиями.',
     hotel: 'Террасы отелей',
     beach: 'Пляжные клубы',
@@ -175,30 +175,34 @@ const ContactModal = ({
               <X className="w-5 h-5 text-gray-700 dark:text-gray-300" />
             </button>
 
-            <AnimatePresence mode="wait">
-              <motion.h3
-                key={lang}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.25 }}
-                className="text-2xl font-semibold text-gray-900 dark:text-white mb-6"
-              >
-                {t('demoTitle')}
-              </motion.h3>
-            </AnimatePresence>
-            <AnimatePresence mode="wait">
-              <motion.p
-                key={lang}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.25, delay: 0.05 }}
-                className="text-gray-700 dark:text-gray-200 mb-8"
-              >
-                {t('demoDescription')}
-              </motion.p>
-            </AnimatePresence>
+            <div className="min-h-[4rem] mb-6">
+              <AnimatePresence mode="wait">
+                <motion.h3
+                  key={lang}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.25 }}
+                  className="text-2xl font-semibold text-gray-900 dark:text-white"
+                >
+                  {t('demoTitle')}
+                </motion.h3>
+              </AnimatePresence>
+            </div>
+            <div className="min-h-[4rem] mb-8">
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={lang + 'desc'}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25, delay: 0.05 }}
+                  className="text-gray-700 dark:text-gray-200"
+                >
+                  {t('demoDescription')}
+                </motion.p>
+              </AnimatePresence>
+            </div>
 
             <div className="space-y-5">
               <a
@@ -249,18 +253,20 @@ const ContactModal = ({
               </a>
             </div>
 
-            <AnimatePresence mode="wait">
-              <motion.p
-                key={lang}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.25, delay: 0.1 }}
-                className="mt-6 text-sm text-center text-gray-500 dark:text-gray-400"
-              >
-                {t('responseTime')}
-              </motion.p>
-            </AnimatePresence>
+            <div className="min-h-[2rem] mt-6">
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={lang + 'resp'}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25, delay: 0.1 }}
+                  className="text-sm text-center text-gray-500 dark:text-gray-400"
+                >
+                  {t('responseTime')}
+                </motion.p>
+              </AnimatePresence>
+            </div>
           </motion.div>
         </motion.div>
       )}
@@ -353,84 +359,90 @@ const StickyShowcase = ({
 
           <div className="w-full md:w-1/2 relative h-64 md:h-80">
             <motion.div style={{ opacity: opacity1 }} className="absolute inset-0 flex flex-col justify-center">
-              <AnimatePresence mode="wait">
-                <motion.h3
-                  key={lang + 's1t'}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.25 }}
-                  className="text-3xl md:text-5xl font-semibold tracking-tight text-gray-900 dark:text-white"
-                >
-                  {t('sticky1Title')}
-                </motion.h3>
-              </AnimatePresence>
-              <AnimatePresence mode="wait">
-                <motion.p
-                  key={lang + 's1d'}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.25, delay: 0.1 }}
-                  className="mt-4 text-xl text-gray-500 dark:text-gray-400"
-                >
-                  {t('sticky1Desc')}
-                </motion.p>
-              </AnimatePresence>
+              <div className="min-h-[12rem] md:min-h-[16rem]">
+                <AnimatePresence mode="wait">
+                  <motion.h3
+                    key={lang + 's1t'}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.25 }}
+                    className="text-3xl md:text-5xl font-semibold tracking-tight text-gray-900 dark:text-white"
+                  >
+                    {t('sticky1Title')}
+                  </motion.h3>
+                </AnimatePresence>
+                <AnimatePresence mode="wait">
+                  <motion.p
+                    key={lang + 's1d'}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.25, delay: 0.1 }}
+                    className="mt-4 text-xl text-gray-500 dark:text-gray-400"
+                  >
+                    {t('sticky1Desc')}
+                  </motion.p>
+                </AnimatePresence>
+              </div>
             </motion.div>
 
             <motion.div style={{ opacity: opacity2 }} className="absolute inset-0 flex flex-col justify-center">
-              <AnimatePresence mode="wait">
-                <motion.h3
-                  key={lang + 's2t'}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.25 }}
-                  className="text-3xl md:text-5xl font-semibold tracking-tight text-gray-900 dark:text-white"
-                >
-                  {t('sticky2Title')}
-                </motion.h3>
-              </AnimatePresence>
-              <AnimatePresence mode="wait">
-                <motion.p
-                  key={lang + 's2d'}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.25, delay: 0.1 }}
-                  className="mt-4 text-xl text-gray-500 dark:text-gray-400"
-                >
-                  {t('sticky2Desc')}
-                </motion.p>
-              </AnimatePresence>
+              <div className="min-h-[12rem] md:min-h-[16rem]">
+                <AnimatePresence mode="wait">
+                  <motion.h3
+                    key={lang + 's2t'}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.25 }}
+                    className="text-3xl md:text-5xl font-semibold tracking-tight text-gray-900 dark:text-white"
+                  >
+                    {t('sticky2Title')}
+                  </motion.h3>
+                </AnimatePresence>
+                <AnimatePresence mode="wait">
+                  <motion.p
+                    key={lang + 's2d'}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.25, delay: 0.1 }}
+                    className="mt-4 text-xl text-gray-500 dark:text-gray-400"
+                  >
+                    {t('sticky2Desc')}
+                  </motion.p>
+                </AnimatePresence>
+              </div>
             </motion.div>
 
             <motion.div style={{ opacity: opacity3 }} className="absolute inset-0 flex flex-col justify-center">
-              <AnimatePresence mode="wait">
-                <motion.h3
-                  key={lang + 's3t'}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.25 }}
-                  className="text-3xl md:text-5xl font-semibold tracking-tight text-gray-900 dark:text-white"
-                >
-                  {t('sticky3Title')}
-                </motion.h3>
-              </AnimatePresence>
-              <AnimatePresence mode="wait">
-                <motion.p
-                  key={lang + 's3d'}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.25, delay: 0.1 }}
-                  className="mt-4 text-xl text-gray-500 dark:text-gray-400"
-                >
-                  {t('sticky3Desc')}
-                </motion.p>
-              </AnimatePresence>
+              <div className="min-h-[12rem] md:min-h-[16rem]">
+                <AnimatePresence mode="wait">
+                  <motion.h3
+                    key={lang + 's3t'}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.25 }}
+                    className="text-3xl md:text-5xl font-semibold tracking-tight text-gray-900 dark:text-white"
+                  >
+                    {t('sticky3Title')}
+                  </motion.h3>
+                </AnimatePresence>
+                <AnimatePresence mode="wait">
+                  <motion.p
+                    key={lang + 's3d'}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.25, delay: 0.1 }}
+                    className="mt-4 text-xl text-gray-500 dark:text-gray-400"
+                  >
+                    {t('sticky3Desc')}
+                  </motion.p>
+                </AnimatePresence>
+              </div>
             </motion.div>
           </div>
         </div>
@@ -471,7 +483,7 @@ const UmbrellaIllustration = () => (
 );
 
 // ========================
-//      TEAM CARD
+//      TEAM CARD (FIXED)
 // ========================
 const TeamCard = ({
   name,
@@ -484,13 +496,13 @@ const TeamCard = ({
   icon: React.ElementType;
   lang: 'en' | 'ru';
 }) => (
-  <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-6 flex flex-col items-center text-center border border-gray-100 dark:border-gray-800">
+  <div className="h-full bg-gray-50 dark:bg-gray-900 rounded-3xl p-6 flex flex-col items-center text-center border border-gray-100 dark:border-gray-800">
     <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-2xl font-medium mb-4">
       {name.split(' ').map(n => n[0]).join('')}
     </div>
     <h4 className="text-lg font-semibold text-gray-900 dark:text-white">{name}</h4>
-    <div className="flex items-center gap-2 mt-1 text-sm text-gray-500 dark:text-gray-400">
-      <Icon className="w-4 h-4" />
+    <div className="flex items-center gap-2 mt-1 text-sm text-gray-500 dark:text-gray-400 min-h-[3rem]">
+      <Icon className="w-4 h-4 flex-shrink-0" />
       <AnimatePresence mode="wait">
         <motion.span
           key={lang + name}
@@ -558,30 +570,32 @@ function App() {
         </div>
 
         <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
-          <AnimatePresence mode="wait">
-            <motion.h1
-              key={lang}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-              className="text-5xl md:text-7xl font-bold tracking-tight text-white mb-6"
-            >
-              {t('heroTitle')}
-            </motion.h1>
-          </AnimatePresence>
-          <AnimatePresence mode="wait">
-            <motion.p
-              key={lang + 'sub'}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3, delay: 0.05 }}
-              className="text-xl md:text-2xl text-white/90 mb-10"
-            >
-              {t('heroSubtitle')}
-            </motion.p>
-          </AnimatePresence>
+          <div className="min-h-[14rem] md:min-h-[18rem] mb-10">
+            <AnimatePresence mode="wait">
+              <motion.h1
+                key={lang}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+                className="text-5xl md:text-7xl font-bold tracking-tight text-white mb-6"
+              >
+                {t('heroTitle')}
+              </motion.h1>
+            </AnimatePresence>
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={lang + 'sub'}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3, delay: 0.05 }}
+                className="text-xl md:text-2xl text-white/90"
+              >
+                {t('heroSubtitle')}
+              </motion.p>
+            </AnimatePresence>
+          </div>
           <motion.button
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -599,18 +613,20 @@ function App() {
       {/* Team Section */}
       <section className="py-24 px-6 md:px-8 bg-white dark:bg-black">
         <div className="max-w-7xl mx-auto">
-          <AnimatePresence mode="wait">
-            <motion.h2
-              key={lang}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.25 }}
-              className="text-4xl md:text-5xl font-bold tracking-tight text-center mb-12 text-gray-900 dark:text-white"
-            >
-              {t('teamTitle')}
-            </motion.h2>
-          </AnimatePresence>
+          <div className="text-center mb-12 min-h-[5rem] md:min-h-[4rem]">
+            <AnimatePresence mode="wait">
+              <motion.h2
+                key={lang}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.25 }}
+                className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white"
+              >
+                {t('teamTitle')}
+              </motion.h2>
+            </AnimatePresence>
+          </div>
 
           <div className="mb-16">
             <div className="relative rounded-3xl overflow-hidden h-[500px] md:h-[600px] border border-gray-200 dark:border-gray-700">
@@ -643,18 +659,20 @@ function App() {
       {/* Use Cases Section */}
       <section className="py-24 px-6 md:px-8 bg-gray-50 dark:bg-gray-950">
         <div className="max-w-7xl mx-auto">
-          <AnimatePresence mode="wait">
-            <motion.h2
-              key={lang}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.25 }}
-              className="text-4xl md:text-5xl font-bold tracking-tight text-center mb-16 text-gray-900 dark:text-white"
-            >
-              {t('useCasesTitle')}
-            </motion.h2>
-          </AnimatePresence>
+          <div className="text-center mb-16 min-h-[5rem] md:min-h-[4rem]">
+            <AnimatePresence mode="wait">
+              <motion.h2
+                key={lang}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.25 }}
+                className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white"
+              >
+                {t('useCasesTitle')}
+              </motion.h2>
+            </AnimatePresence>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             <div className="relative rounded-3xl overflow-hidden h-80 md:h-96 group">
               <img
@@ -663,11 +681,18 @@ function App() {
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
               <div className="absolute inset-0 bg-black/20 flex items-end p-8">
-                <div className="px-6 py-3 rounded-full bg-black/50 backdrop-blur-sm">
+                <div className="px-6 py-3 rounded-full bg-black/50 backdrop-blur-sm min-h-[3rem] flex items-center">
                   <AnimatePresence mode="wait">
-                    <h3 key={lang} className="text-3xl font-semibold text-white">
+                    <motion.h3
+                      key={lang + 'hotel'}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="text-3xl font-semibold text-white"
+                    >
                       {t('hotel')}
-                    </h3>
+                    </motion.h3>
                   </AnimatePresence>
                 </div>
               </div>
@@ -679,11 +704,18 @@ function App() {
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
               <div className="absolute inset-0 bg-black/20 flex items-end p-8">
-                <div className="px-6 py-3 rounded-full bg-black/50 backdrop-blur-sm">
+                <div className="px-6 py-3 rounded-full bg-black/50 backdrop-blur-sm min-h-[3rem] flex items-center">
                   <AnimatePresence mode="wait">
-                    <h3 key={lang} className="text-3xl font-semibold text-white">
+                    <motion.h3
+                      key={lang + 'beach'}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="text-3xl font-semibold text-white"
+                    >
                       {t('beach')}
-                    </h3>
+                    </motion.h3>
                   </AnimatePresence>
                 </div>
               </div>
@@ -695,8 +727,8 @@ function App() {
       {/* Footer */}
       <footer className="py-12 px-6 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
-          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-            <Umbrella className="w-5 h-5" />
+          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 min-h-[2rem]">
+            <Umbrella className="w-5 h-5 flex-shrink-0" />
             <AnimatePresence mode="wait">
               <span key={lang}>{t('footer')}</span>
             </AnimatePresence>
