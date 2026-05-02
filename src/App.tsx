@@ -65,7 +65,7 @@ const translations = {
     role1: 'Механическая система поворота',
     role2: 'Оптические датчики',
     role3: 'Корпус и материалы',
-    role4: 'Встроенное ПО микроконтроллера',
+    role4: 'ПО микроконтроллера',
     useCasesTitle: 'Где комфорт встречается с технологиями.',
     hotel: 'Террасы отелей',
     beach: 'Пляжные клубы',
@@ -134,10 +134,12 @@ const ContactModal = ({
   isOpen,
   onClose,
   t,
+  lang,
 }: {
   isOpen: boolean;
   onClose: () => void;
   t: (key: keyof typeof translations['en']) => string;
+  lang: 'en' | 'ru';
 }) => {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -173,12 +175,30 @@ const ContactModal = ({
               <X className="w-5 h-5 text-gray-700 dark:text-gray-300" />
             </button>
 
-            <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
-              {t('demoTitle')}
-            </h3>
-            <p className="text-gray-700 dark:text-gray-200 mb-8">
-              {t('demoDescription')}
-            </p>
+            <AnimatePresence mode="wait">
+              <motion.h3
+                key={lang}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.25 }}
+                className="text-2xl font-semibold text-gray-900 dark:text-white mb-6"
+              >
+                {t('demoTitle')}
+              </motion.h3>
+            </AnimatePresence>
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={lang}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25, delay: 0.05 }}
+                className="text-gray-700 dark:text-gray-200 mb-8"
+              >
+                {t('demoDescription')}
+              </motion.p>
+            </AnimatePresence>
 
             <div className="space-y-5">
               <a
@@ -229,9 +249,18 @@ const ContactModal = ({
               </a>
             </div>
 
-            <p className="mt-6 text-sm text-center text-gray-500 dark:text-gray-400">
-              {t('responseTime')}
-            </p>
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={lang}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25, delay: 0.1 }}
+                className="mt-6 text-sm text-center text-gray-500 dark:text-gray-400"
+              >
+                {t('responseTime')}
+              </motion.p>
+            </AnimatePresence>
           </motion.div>
         </motion.div>
       )}
@@ -250,20 +279,13 @@ const ScrollToTopButton = ({
   t: (key: keyof typeof translations['en']) => string;
 }) => {
   const { scrollY } = useScroll();
-  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
 
-  useEffect(() => {
-    const handleResize = () => setWindowHeight(window.innerHeight);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const rawOpacity = useTransform(scrollY, [windowHeight * 0.7, windowHeight * 0.9], [0, 1]);
+  const rawOpacity = useTransform(scrollY, [200, 400], [0, 1]);
   const opacity = useSpring(rawOpacity, { stiffness: 200, damping: 30 });
+
   const rawX = useTransform(rawOpacity, [0, 1], [-20, 0]);
   const x = useSpring(rawX, { stiffness: 200, damping: 30 });
 
-  // Кастомная плавная прокрутка с заданной длительностью
   const smoothScrollToTop = (duration: number) => {
     const start = window.scrollY;
     const startTime = performance.now();
@@ -282,7 +304,7 @@ const ScrollToTopButton = ({
   };
 
   const handleClick = () => {
-    smoothScrollToTop(800); // длительность в миллисекундах (можно менять)
+    smoothScrollToTop(800);
     setTimeout(() => onOpenModal(), 800);
   };
 
@@ -304,8 +326,10 @@ const ScrollToTopButton = ({
 // ========================
 const StickyShowcase = ({
   t,
+  lang,
 }: {
   t: (key: keyof typeof translations['en']) => string;
+  lang: 'en' | 'ru';
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -329,30 +353,84 @@ const StickyShowcase = ({
 
           <div className="w-full md:w-1/2 relative h-64 md:h-80">
             <motion.div style={{ opacity: opacity1 }} className="absolute inset-0 flex flex-col justify-center">
-              <h3 className="text-3xl md:text-5xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                {t('sticky1Title')}
-              </h3>
-              <p className="mt-4 text-xl text-gray-500 dark:text-gray-400">
-                {t('sticky1Desc')}
-              </p>
+              <AnimatePresence mode="wait">
+                <motion.h3
+                  key={lang + 's1t'}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.25 }}
+                  className="text-3xl md:text-5xl font-semibold tracking-tight text-gray-900 dark:text-white"
+                >
+                  {t('sticky1Title')}
+                </motion.h3>
+              </AnimatePresence>
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={lang + 's1d'}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25, delay: 0.1 }}
+                  className="mt-4 text-xl text-gray-500 dark:text-gray-400"
+                >
+                  {t('sticky1Desc')}
+                </motion.p>
+              </AnimatePresence>
             </motion.div>
 
             <motion.div style={{ opacity: opacity2 }} className="absolute inset-0 flex flex-col justify-center">
-              <h3 className="text-3xl md:text-5xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                {t('sticky2Title')}
-              </h3>
-              <p className="mt-4 text-xl text-gray-500 dark:text-gray-400">
-                {t('sticky2Desc')}
-              </p>
+              <AnimatePresence mode="wait">
+                <motion.h3
+                  key={lang + 's2t'}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.25 }}
+                  className="text-3xl md:text-5xl font-semibold tracking-tight text-gray-900 dark:text-white"
+                >
+                  {t('sticky2Title')}
+                </motion.h3>
+              </AnimatePresence>
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={lang + 's2d'}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25, delay: 0.1 }}
+                  className="mt-4 text-xl text-gray-500 dark:text-gray-400"
+                >
+                  {t('sticky2Desc')}
+                </motion.p>
+              </AnimatePresence>
             </motion.div>
 
             <motion.div style={{ opacity: opacity3 }} className="absolute inset-0 flex flex-col justify-center">
-              <h3 className="text-3xl md:text-5xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                {t('sticky3Title')}
-              </h3>
-              <p className="mt-4 text-xl text-gray-500 dark:text-gray-400">
-                {t('sticky3Desc')}
-              </p>
+              <AnimatePresence mode="wait">
+                <motion.h3
+                  key={lang + 's3t'}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.25 }}
+                  className="text-3xl md:text-5xl font-semibold tracking-tight text-gray-900 dark:text-white"
+                >
+                  {t('sticky3Title')}
+                </motion.h3>
+              </AnimatePresence>
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={lang + 's3d'}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25, delay: 0.1 }}
+                  className="mt-4 text-xl text-gray-500 dark:text-gray-400"
+                >
+                  {t('sticky3Desc')}
+                </motion.p>
+              </AnimatePresence>
             </motion.div>
           </div>
         </div>
@@ -399,10 +477,12 @@ const TeamCard = ({
   name,
   role,
   icon: Icon,
+  lang,
 }: {
   name: string;
   role: string;
   icon: React.ElementType;
+  lang: 'en' | 'ru';
 }) => (
   <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-6 flex flex-col items-center text-center border border-gray-100 dark:border-gray-800">
     <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-2xl font-medium mb-4">
@@ -411,7 +491,17 @@ const TeamCard = ({
     <h4 className="text-lg font-semibold text-gray-900 dark:text-white">{name}</h4>
     <div className="flex items-center gap-2 mt-1 text-sm text-gray-500 dark:text-gray-400">
       <Icon className="w-4 h-4" />
-      <span>{role}</span>
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={lang + name}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          {role}
+        </motion.span>
+      </AnimatePresence>
     </div>
   </div>
 );
@@ -430,6 +520,7 @@ function App() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         t={t}
+        lang={lang}
       />
 
       <ScrollToTopButton
@@ -467,22 +558,30 @@ function App() {
         </div>
 
         <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-5xl md:text-7xl font-bold tracking-tight text-white mb-6"
-          >
-            {t('heroTitle')}
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-            className="text-xl md:text-2xl text-white/90 mb-10"
-          >
-            {t('heroSubtitle')}
-          </motion.p>
+          <AnimatePresence mode="wait">
+            <motion.h1
+              key={lang}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="text-5xl md:text-7xl font-bold tracking-tight text-white mb-6"
+            >
+              {t('heroTitle')}
+            </motion.h1>
+          </AnimatePresence>
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={lang + 'sub'}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3, delay: 0.05 }}
+              className="text-xl md:text-2xl text-white/90 mb-10"
+            >
+              {t('heroSubtitle')}
+            </motion.p>
+          </AnimatePresence>
           <motion.button
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -495,14 +594,23 @@ function App() {
         </div>
       </section>
 
-      <StickyShowcase t={t} />
+      <StickyShowcase t={t} lang={lang} />
 
       {/* Team Section */}
       <section className="py-24 px-6 md:px-8 bg-white dark:bg-black">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-center mb-12 text-gray-900 dark:text-white">
-            {t('teamTitle')}
-          </h2>
+          <AnimatePresence mode="wait">
+            <motion.h2
+              key={lang}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25 }}
+              className="text-4xl md:text-5xl font-bold tracking-tight text-center mb-12 text-gray-900 dark:text-white"
+            >
+              {t('teamTitle')}
+            </motion.h2>
+          </AnimatePresence>
 
           <div className="mb-16">
             <div className="relative rounded-3xl overflow-hidden h-[500px] md:h-[600px] border border-gray-200 dark:border-gray-700">
@@ -513,19 +621,21 @@ function App() {
               />
               <div className="absolute bottom-8 left-8">
                 <div className="px-6 py-3 rounded-full bg-black/70 backdrop-blur-sm">
-                  <span className="text-white text-xl md:text-2xl font-medium">
-                    {t('teamCaption')}
-                  </span>
+                  <AnimatePresence mode="wait">
+                    <span key={lang} className="text-white text-xl md:text-2xl font-medium">
+                      {t('teamCaption')}
+                    </span>
+                  </AnimatePresence>
                 </div>
               </div>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <TeamCard name="Anton Goryainov" role={t('role1')} icon={Wrench} />
-            <TeamCard name="Konstantin Lishik" role={t('role2')} icon={Eye} />
-            <TeamCard name="Alexander Petryaev" role={t('role3')} icon={Box} />
-            <TeamCard name="Ivan Turubar" role={t('role4')} icon={Cpu} />
+            <TeamCard name="Anton Goryainov" role={t('role1')} icon={Wrench} lang={lang} />
+            <TeamCard name="Konstantin Lishik" role={t('role2')} icon={Eye} lang={lang} />
+            <TeamCard name="Alexander Petryaev" role={t('role3')} icon={Box} lang={lang} />
+            <TeamCard name="Ivan Turubar" role={t('role4')} icon={Cpu} lang={lang} />
           </div>
         </div>
       </section>
@@ -533,9 +643,18 @@ function App() {
       {/* Use Cases Section */}
       <section className="py-24 px-6 md:px-8 bg-gray-50 dark:bg-gray-950">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-center mb-16 text-gray-900 dark:text-white">
-            {t('useCasesTitle')}
-          </h2>
+          <AnimatePresence mode="wait">
+            <motion.h2
+              key={lang}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25 }}
+              className="text-4xl md:text-5xl font-bold tracking-tight text-center mb-16 text-gray-900 dark:text-white"
+            >
+              {t('useCasesTitle')}
+            </motion.h2>
+          </AnimatePresence>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             <div className="relative rounded-3xl overflow-hidden h-80 md:h-96 group">
               <img
@@ -545,7 +664,11 @@ function App() {
               />
               <div className="absolute inset-0 bg-black/20 flex items-end p-8">
                 <div className="px-6 py-3 rounded-full bg-black/50 backdrop-blur-sm">
-                  <h3 className="text-3xl font-semibold text-white">{t('hotel')}</h3>
+                  <AnimatePresence mode="wait">
+                    <h3 key={lang} className="text-3xl font-semibold text-white">
+                      {t('hotel')}
+                    </h3>
+                  </AnimatePresence>
                 </div>
               </div>
             </div>
@@ -557,7 +680,11 @@ function App() {
               />
               <div className="absolute inset-0 bg-black/20 flex items-end p-8">
                 <div className="px-6 py-3 rounded-full bg-black/50 backdrop-blur-sm">
-                  <h3 className="text-3xl font-semibold text-white">{t('beach')}</h3>
+                  <AnimatePresence mode="wait">
+                    <h3 key={lang} className="text-3xl font-semibold text-white">
+                      {t('beach')}
+                    </h3>
+                  </AnimatePresence>
                 </div>
               </div>
             </div>
@@ -570,7 +697,9 @@ function App() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
             <Umbrella className="w-5 h-5" />
-            <span>{t('footer')}</span>
+            <AnimatePresence mode="wait">
+              <span key={lang}>{t('footer')}</span>
+            </AnimatePresence>
           </div>
           <a
             href="mailto:hello@smartshadow.com"
