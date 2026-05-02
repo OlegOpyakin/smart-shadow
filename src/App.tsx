@@ -1,8 +1,109 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Sun, Moon, Umbrella, Wrench, Eye, Box, Cpu, X, Mail, Send, Phone } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion';
+import {
+  Sun, Moon, Umbrella, Wrench, Eye, Box, Cpu,
+  X, Mail, Send, Phone, ArrowUp,
+} from 'lucide-react';
 
-// --- Theme Toggle Hook ---
+// ========================
+//        TRANSLATIONS
+// ========================
+const translations = {
+  en: {
+    heroTitle: 'Smart Shadow.',
+    heroSubtitle: 'The shade that follows you. Automatically.',
+    requestDemo: 'Request a Demo',
+    demoTitle: 'Request a Demo',
+    demoDescription: 'Our team is ready to show you how Smart Shadow can transform your outdoor space.',
+    email: 'Email',
+    telegram: 'Telegram',
+    phone: 'Phone',
+    responseTime: 'We typically respond within a few hours.',
+    close: 'Close',
+    toggleTheme: 'Toggle theme',
+    switchLanguage: 'Switch language (RU)',
+    scrollToTop: 'Scroll to top and request demo',
+    sticky1Title: 'Tracks the sun in real-time.',
+    sticky1Desc: 'Our proprietary optical sensors continuously adjust the canopy angle.',
+    sticky2Title: 'Powered by motion. No batteries, no wires.',
+    sticky2Desc: "A whisper-quiet mechanism harvests energy from the sun's movement.",
+    sticky3Title: 'Perfect for hotel terraces and beachfronts.',
+    sticky3Desc: 'Elevate guest experience with effortless, all-day shade.',
+    teamTitle: 'Built by Engineers.',
+    teamCaption: 'The Smart Shadow Team',
+    role1: 'Mechanical Rotation System',
+    role2: 'Optical Sensors',
+    role3: 'Enclosure & Materials',
+    role4: 'Microcontroller Firmware',
+    useCasesTitle: 'Where Comfort Meets Technology.',
+    hotel: 'Hotel Terraces',
+    beach: 'Beach Clubs',
+    footer: '© 2026 Smart Shadow',
+  },
+  ru: {
+    heroTitle: 'Smart Shadow.',
+    heroSubtitle: 'Тень, которая следует за вами. Автоматически.',
+    requestDemo: 'Запросить демо',
+    demoTitle: 'Запросить демо',
+    demoDescription: 'Наша команда готова показать, как Smart Shadow преобразит ваше открытое пространство.',
+    email: 'Почта',
+    telegram: 'Телеграм',
+    phone: 'Телефон',
+    responseTime: 'Обычно отвечаем в течение пары часов.',
+    close: 'Закрыть',
+    toggleTheme: 'Переключить тему',
+    switchLanguage: 'Сменить язык (EN)',
+    scrollToTop: 'Наверх и запросить демо',
+    sticky1Title: 'Следит за солнцем в реальном времени.',
+    sticky1Desc: 'Наши запатентованные оптические датчики непрерывно регулируют угол купола.',
+    sticky2Title: 'Работает от движения. Без батарей и проводов.',
+    sticky2Desc: 'Бесшумный механизм извлекает энергию из перемещения солнца.',
+    sticky3Title: 'Идеально для веранд отелей и пляжных зон.',
+    sticky3Desc: 'Улучшите впечатления гостей, обеспечив лёгкую тень на весь день.',
+    teamTitle: 'Создано инженерами.',
+    teamCaption: 'Команда Smart Shadow',
+    role1: 'Механическая система поворота',
+    role2: 'Оптические датчики',
+    role3: 'Корпус и материалы',
+    role4: 'ПО микроконтроллера',
+    useCasesTitle: 'Где комфорт встречается с технологиями.',
+    hotel: 'Террасы отелей',
+    beach: 'Пляжные клубы',
+    footer: '© 2026 Smart Shadow',
+  },
+};
+
+// ========================
+//        LANGUAGE HOOK
+// ========================
+const useLanguage = () => {
+  const [lang, setLang] = useState<'en' | 'ru'>('en');
+
+  useEffect(() => {
+    const stored = localStorage.getItem('lang') as 'en' | 'ru' | null;
+    const browserLang = navigator.language.startsWith('ru') ? 'ru' : 'en';
+    const initial = stored ?? browserLang;
+    setLang(initial);
+  }, []);
+
+  const toggleLanguage = () => {
+    setLang(prev => {
+      const next = prev === 'en' ? 'ru' : 'en';
+      localStorage.setItem('lang', next);
+      return next;
+    });
+  };
+
+  const t = useCallback((key: keyof typeof translations['en']) => {
+    return translations[lang]?.[key] ?? translations['en'][key] ?? key;
+  }, [lang]);
+
+  return { lang, toggleLanguage, t };
+};
+
+// ========================
+//        THEME HOOK
+// ========================
 const useTheme = () => {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
@@ -25,8 +126,21 @@ const useTheme = () => {
 
   return { theme, toggleTheme };
 };
-// --- Contact Modal Component ---
-const ContactModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+
+// ========================
+//    CONTACT MODAL
+// ========================
+const ContactModal = ({
+  isOpen,
+  onClose,
+  t,
+  lang,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  t: (key: keyof typeof translations['en']) => string;
+  lang: 'en' | 'ru';
+}) => {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -56,17 +170,35 @@ const ContactModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
             <button
               onClick={onClose}
               className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-200/80 dark:hover:bg-gray-700/80 transition-colors"
-              aria-label="Close"
+              aria-label={t('close')}
             >
               <X className="w-5 h-5 text-gray-700 dark:text-gray-300" />
             </button>
 
-            <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
-              Request a Demo
-            </h3>
-            <p className="text-gray-700 dark:text-gray-200 mb-8">
-              Our team is ready to show you how Smart Shadow can transform your outdoor space.
-            </p>
+            <AnimatePresence mode="wait">
+              <motion.h3
+                key={lang}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.25 }}
+                className="text-2xl font-semibold text-gray-900 dark:text-white mb-6"
+              >
+                {t('demoTitle')}
+              </motion.h3>
+            </AnimatePresence>
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={lang}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25, delay: 0.05 }}
+                className="text-gray-700 dark:text-gray-200 mb-8"
+              >
+                {t('demoDescription')}
+              </motion.p>
+            </AnimatePresence>
 
             <div className="space-y-5">
               <a
@@ -77,7 +209,7 @@ const ContactModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                   <Mail className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Email</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">{t('email')}</div>
                   <div className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
                     hello@smartshadow.com
                   </div>
@@ -94,7 +226,7 @@ const ContactModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                   <Send className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Telegram</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">{t('telegram')}</div>
                   <div className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
                     @suntrasher
                   </div>
@@ -109,7 +241,7 @@ const ContactModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                   <Phone className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Phone</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">{t('phone')}</div>
                   <div className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
                     +1 (234) 567-890
                   </div>
@@ -117,9 +249,18 @@ const ContactModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
               </a>
             </div>
 
-            <p className="mt-6 text-sm text-center text-gray-500 dark:text-gray-400">
-              We typically respond within a few hours.
-            </p>
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={lang}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25, delay: 0.1 }}
+                className="mt-6 text-sm text-center text-gray-500 dark:text-gray-400"
+              >
+                {t('responseTime')}
+              </motion.p>
+            </AnimatePresence>
           </motion.div>
         </motion.div>
       )}
@@ -127,8 +268,69 @@ const ContactModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
   );
 };
 
-// --- Sticky Scroll Section with Apple-style text swap ---
-const StickyShowcase = () => {
+// ========================
+//  SCROLL TO TOP BUTTON
+// ========================
+const ScrollToTopButton = ({
+  onOpenModal,
+  t,
+}: {
+  onOpenModal: () => void;
+  t: (key: keyof typeof translations['en']) => string;
+}) => {
+  const { scrollY } = useScroll();
+
+  const rawOpacity = useTransform(scrollY, [200, 400], [0, 1]);
+  const opacity = useSpring(rawOpacity, { stiffness: 200, damping: 30 });
+
+  const rawX = useTransform(rawOpacity, [0, 1], [-20, 0]);
+  const x = useSpring(rawX, { stiffness: 200, damping: 30 });
+
+  const smoothScrollToTop = (duration: number) => {
+    const start = window.scrollY;
+    const startTime = performance.now();
+
+    const animateScroll = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const ease = progress < 0.5
+        ? 4 * progress * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+      window.scrollTo(0, start * (1 - ease));
+      if (progress < 1) requestAnimationFrame(animateScroll);
+    };
+
+    requestAnimationFrame(animateScroll);
+  };
+
+  const handleClick = () => {
+    smoothScrollToTop(800);
+    setTimeout(() => onOpenModal(), 800);
+  };
+
+  return (
+    <motion.button
+      style={{ opacity, x }}
+      onClick={handleClick}
+      className="fixed top-6 left-6 z-40 flex items-center gap-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 text-sm md:text-base font-medium shadow-lg shadow-blue-600/30 transition-all"
+      aria-label={t('scrollToTop')}
+    >
+      <ArrowUp className="w-5 h-5" />
+      {t('requestDemo')}
+    </motion.button>
+  );
+};
+
+// ========================
+//  STICKY SHOWCASE SECTION
+// ========================
+const StickyShowcase = ({
+  t,
+  lang,
+}: {
+  t: (key: keyof typeof translations['en']) => string;
+  lang: 'en' | 'ru';
+}) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -151,30 +353,84 @@ const StickyShowcase = () => {
 
           <div className="w-full md:w-1/2 relative h-64 md:h-80">
             <motion.div style={{ opacity: opacity1 }} className="absolute inset-0 flex flex-col justify-center">
-              <h3 className="text-3xl md:text-5xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                Tracks the sun in real-time.
-              </h3>
-              <p className="mt-4 text-xl text-gray-500 dark:text-gray-400">
-                Our proprietary optical sensors continuously adjust the canopy angle.
-              </p>
+              <AnimatePresence mode="wait">
+                <motion.h3
+                  key={lang + 's1t'}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.25 }}
+                  className="text-3xl md:text-5xl font-semibold tracking-tight text-gray-900 dark:text-white"
+                >
+                  {t('sticky1Title')}
+                </motion.h3>
+              </AnimatePresence>
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={lang + 's1d'}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25, delay: 0.1 }}
+                  className="mt-4 text-xl text-gray-500 dark:text-gray-400"
+                >
+                  {t('sticky1Desc')}
+                </motion.p>
+              </AnimatePresence>
             </motion.div>
 
             <motion.div style={{ opacity: opacity2 }} className="absolute inset-0 flex flex-col justify-center">
-              <h3 className="text-3xl md:text-5xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                Powered by motion. No batteries, no wires.
-              </h3>
-              <p className="mt-4 text-xl text-gray-500 dark:text-gray-400">
-                A whisper-quiet mechanism harvests energy from the sun's movement.
-              </p>
+              <AnimatePresence mode="wait">
+                <motion.h3
+                  key={lang + 's2t'}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.25 }}
+                  className="text-3xl md:text-5xl font-semibold tracking-tight text-gray-900 dark:text-white"
+                >
+                  {t('sticky2Title')}
+                </motion.h3>
+              </AnimatePresence>
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={lang + 's2d'}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25, delay: 0.1 }}
+                  className="mt-4 text-xl text-gray-500 dark:text-gray-400"
+                >
+                  {t('sticky2Desc')}
+                </motion.p>
+              </AnimatePresence>
             </motion.div>
 
             <motion.div style={{ opacity: opacity3 }} className="absolute inset-0 flex flex-col justify-center">
-              <h3 className="text-3xl md:text-5xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                Perfect for hotel terraces and beachfronts.
-              </h3>
-              <p className="mt-4 text-xl text-gray-500 dark:text-gray-400">
-                Elevate guest experience with effortless, all-day shade.
-              </p>
+              <AnimatePresence mode="wait">
+                <motion.h3
+                  key={lang + 's3t'}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.25 }}
+                  className="text-3xl md:text-5xl font-semibold tracking-tight text-gray-900 dark:text-white"
+                >
+                  {t('sticky3Title')}
+                </motion.h3>
+              </AnimatePresence>
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={lang + 's3d'}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25, delay: 0.1 }}
+                  className="mt-4 text-xl text-gray-500 dark:text-gray-400"
+                >
+                  {t('sticky3Desc')}
+                </motion.p>
+              </AnimatePresence>
             </motion.div>
           </div>
         </div>
@@ -183,36 +439,51 @@ const StickyShowcase = () => {
   );
 };
 
-// --- Sleek Umbrella SVG ---
+// ========================
+//   UMBRELLA ILLUSTRATION
+// ========================
 const UmbrellaIllustration = () => (
   <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
     <path
       d="M60 180 C60 80, 160 40, 200 40 C240 40, 340 80, 340 180"
-      stroke="currentColor"
-      strokeWidth="6"
-      strokeLinecap="round"
-      className="text-blue-500 dark:text-blue-400"
-      fill="none"
+      stroke="currentColor" strokeWidth="6" strokeLinecap="round"
+      className="text-blue-500 dark:text-blue-400" fill="none"
     />
     <path
       d="M80 160 C100 100, 160 70, 200 70 C240 70, 300 100, 320 160"
-      stroke="currentColor"
-      strokeWidth="3"
-      strokeLinecap="round"
-      className="text-blue-400/60 dark:text-blue-300/60"
-      fill="none"
+      stroke="currentColor" strokeWidth="3" strokeLinecap="round"
+      className="text-blue-400/60 dark:text-blue-300/60" fill="none"
     />
-    <line x1="200" y1="180" x2="200" y2="320" stroke="currentColor" strokeWidth="8" strokeLinecap="round" className="text-gray-700 dark:text-gray-300" />
-    <rect x="170" y="310" width="60" height="20" rx="10" fill="currentColor" className="text-gray-600 dark:text-gray-400" />
-    <circle cx="200" cy="330" r="15" fill="currentColor" className="text-gray-500 dark:text-gray-500" />
-    <circle cx="200" cy="330" r="8" fill="currentColor" className="text-gray-300 dark:text-gray-600" />
-    <circle cx="200" cy="190" r="30" stroke="currentColor" strokeWidth="2" className="text-gray-400/50 dark:text-gray-500/50" fill="none" />
-    <circle cx="200" cy="190" r="22" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 4" className="text-gray-400/70 dark:text-gray-500/70" fill="none" />
+    <line x1="200" y1="180" x2="200" y2="320" stroke="currentColor"
+      strokeWidth="8" strokeLinecap="round"
+      className="text-gray-700 dark:text-gray-300" />
+    <rect x="170" y="310" width="60" height="20" rx="10"
+      fill="currentColor" className="text-gray-600 dark:text-gray-400" />
+    <circle cx="200" cy="330" r="15" fill="currentColor"
+      className="text-gray-500 dark:text-gray-500" />
+    <circle cx="200" cy="330" r="8" fill="currentColor"
+      className="text-gray-300 dark:text-gray-600" />
+    <circle cx="200" cy="190" r="30" stroke="currentColor" strokeWidth="2"
+      className="text-gray-400/50 dark:text-gray-500/50" fill="none" />
+    <circle cx="200" cy="190" r="22" stroke="currentColor" strokeWidth="1.5"
+      strokeDasharray="4 4" className="text-gray-400/70 dark:text-gray-500/70" fill="none" />
   </svg>
 );
 
-// --- Team Member Card ---
-const TeamCard = ({ name, role, icon: Icon }: { name: string; role: string; icon: React.ElementType }) => (
+// ========================
+//      TEAM CARD
+// ========================
+const TeamCard = ({
+  name,
+  role,
+  icon: Icon,
+  lang,
+}: {
+  name: string;
+  role: string;
+  icon: React.ElementType;
+  lang: 'en' | 'ru';
+}) => (
   <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-6 flex flex-col items-center text-center border border-gray-100 dark:border-gray-800">
     <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-2xl font-medium mb-4">
       {name.split(' ').map(n => n[0]).join('')}
@@ -220,28 +491,60 @@ const TeamCard = ({ name, role, icon: Icon }: { name: string; role: string; icon
     <h4 className="text-lg font-semibold text-gray-900 dark:text-white">{name}</h4>
     <div className="flex items-center gap-2 mt-1 text-sm text-gray-500 dark:text-gray-400">
       <Icon className="w-4 h-4" />
-      <span>{role}</span>
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={lang + name}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          {role}
+        </motion.span>
+      </AnimatePresence>
     </div>
   </div>
 );
 
-// --- Main App ---
+// ========================
+//         MAIN APP
+// ========================
 function App() {
   const { theme, toggleTheme } = useTheme();
+  const { lang, toggleLanguage, t } = useLanguage();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <div className="font-sans antialiased bg-white dark:bg-black text-gray-900 dark:text-white transition-colors duration-300">
-      <ContactModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <ContactModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        t={t}
+        lang={lang}
+      />
 
-      {/* Fixed Theme Toggle */}
-      <button
-        onClick={toggleTheme}
-        className="fixed top-6 right-6 z-40 p-3 rounded-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all"
-        aria-label="Toggle theme"
-      >
-        {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-      </button>
+      <ScrollToTopButton
+        onOpenModal={() => setIsModalOpen(true)}
+        t={t}
+      />
+
+      {/* Fixed controls: language + theme */}
+      <div className="fixed top-6 right-6 z-40 flex items-center gap-3">
+        <button
+          onClick={toggleLanguage}
+          className="p-3 rounded-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all text-sm font-medium text-gray-700 dark:text-gray-300"
+          aria-label={t('switchLanguage')}
+        >
+          {lang === 'en' ? 'RU' : 'EN'}
+        </button>
+        <button
+          onClick={toggleTheme}
+          className="p-3 rounded-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all"
+          aria-label={t('toggleTheme')}
+        >
+          {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+        </button>
+      </div>
 
       {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
@@ -255,22 +558,30 @@ function App() {
         </div>
 
         <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-5xl md:text-7xl font-bold tracking-tight text-white mb-6"
-          >
-            Smart Shadow.
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-            className="text-xl md:text-2xl text-white/90 mb-10"
-          >
-            The shade that follows you. Automatically.
-          </motion.p>
+          <AnimatePresence mode="wait">
+            <motion.h1
+              key={lang}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="text-5xl md:text-7xl font-bold tracking-tight text-white mb-6"
+            >
+              {t('heroTitle')}
+            </motion.h1>
+          </AnimatePresence>
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={lang + 'sub'}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3, delay: 0.05 }}
+              className="text-xl md:text-2xl text-white/90 mb-10"
+            >
+              {t('heroSubtitle')}
+            </motion.p>
+          </AnimatePresence>
           <motion.button
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -278,54 +589,72 @@ function App() {
             onClick={() => setIsModalOpen(true)}
             className="rounded-full bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-medium shadow-lg shadow-blue-600/30 transition-all"
           >
-            Request a Demo
+            {t('requestDemo')}
           </motion.button>
         </div>
       </section>
 
-      <StickyShowcase />
+      <StickyShowcase t={t} lang={lang} />
 
-{/* The Team Section with Team Photo */}
-<section className="py-24 px-6 md:px-8 bg-white dark:bg-black">
-  <div className="max-w-7xl mx-auto">
-    <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-center mb-12 text-gray-900 dark:text-white">
-      Built by Engineers.
-    </h2>
+      {/* Team Section */}
+      <section className="py-24 px-6 md:px-8 bg-white dark:bg-black">
+        <div className="max-w-7xl mx-auto">
+          <AnimatePresence mode="wait">
+            <motion.h2
+              key={lang}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25 }}
+              className="text-4xl md:text-5xl font-bold tracking-tight text-center mb-12 text-gray-900 dark:text-white"
+            >
+              {t('teamTitle')}
+            </motion.h2>
+          </AnimatePresence>
 
-    {/* Team Photo */}
-    <div className="mb-16">
-      <div className="relative rounded-3xl overflow-hidden h-[500px] md:h-[600px] border border-gray-200 dark:border-gray-700">
-        <img
-          src="/images/team.jpeg"
-          alt="Smart Shadow Team"
-          className="w-full h-full object-cover"
-        />
-        {/* Dark pill background behind the caption */}
-        <div className="absolute bottom-8 left-8">
-          <div className="px-6 py-3 rounded-full bg-black/70 backdrop-blur-sm">
-            <span className="text-white text-xl md:text-2xl font-medium">
-              The Smart Shadow Team
-            </span>
+          <div className="mb-16">
+            <div className="relative rounded-3xl overflow-hidden h-[500px] md:h-[600px] border border-gray-200 dark:border-gray-700">
+              <img
+                src="/images/team.jpeg"
+                alt="Smart Shadow Team"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute bottom-8 left-8">
+                <div className="px-6 py-3 rounded-full bg-black/70 backdrop-blur-sm">
+                  <AnimatePresence mode="wait">
+                    <span key={lang} className="text-white text-xl md:text-2xl font-medium">
+                      {t('teamCaption')}
+                    </span>
+                  </AnimatePresence>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <TeamCard name="Anton Goryainov" role={t('role1')} icon={Wrench} lang={lang} />
+            <TeamCard name="Konstantin Lishik" role={t('role2')} icon={Eye} lang={lang} />
+            <TeamCard name="Alexander Petryaev" role={t('role3')} icon={Box} lang={lang} />
+            <TeamCard name="Ivan Turubar" role={t('role4')} icon={Cpu} lang={lang} />
           </div>
         </div>
-      </div>
-    </div>
-
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <TeamCard name="Anton Goryainov" role="Mechanical Rotation System" icon={Wrench} />
-      <TeamCard name="Konstantin Lishik" role="Optical Sensors" icon={Eye} />
-      <TeamCard name="Alexander Petryaev" role="Enclosure & Materials" icon={Box} />
-      <TeamCard name="Ivan Turubar" role="Microcontroller Firmware" icon={Cpu} />
-    </div>
-  </div>
-</section>
+      </section>
 
       {/* Use Cases Section */}
       <section className="py-24 px-6 md:px-8 bg-gray-50 dark:bg-gray-950">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-center mb-16 text-gray-900 dark:text-white">
-            Where Comfort Meets Technology.
-          </h2>
+          <AnimatePresence mode="wait">
+            <motion.h2
+              key={lang}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25 }}
+              className="text-4xl md:text-5xl font-bold tracking-tight text-center mb-16 text-gray-900 dark:text-white"
+            >
+              {t('useCasesTitle')}
+            </motion.h2>
+          </AnimatePresence>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             <div className="relative rounded-3xl overflow-hidden h-80 md:h-96 group">
               <img
@@ -335,7 +664,11 @@ function App() {
               />
               <div className="absolute inset-0 bg-black/20 flex items-end p-8">
                 <div className="px-6 py-3 rounded-full bg-black/50 backdrop-blur-sm">
-                    <h3 className="text-3xl font-semibold text-white">Hotel Terraces</h3>
+                  <AnimatePresence mode="wait">
+                    <h3 key={lang} className="text-3xl font-semibold text-white">
+                      {t('hotel')}
+                    </h3>
+                  </AnimatePresence>
                 </div>
               </div>
             </div>
@@ -347,7 +680,11 @@ function App() {
               />
               <div className="absolute inset-0 bg-black/20 flex items-end p-8">
                 <div className="px-6 py-3 rounded-full bg-black/50 backdrop-blur-sm">
-                    <h3 className="text-3xl font-semibold text-white">Beach Clubs</h3>
+                  <AnimatePresence mode="wait">
+                    <h3 key={lang} className="text-3xl font-semibold text-white">
+                      {t('beach')}
+                    </h3>
+                  </AnimatePresence>
                 </div>
               </div>
             </div>
@@ -360,7 +697,9 @@ function App() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
             <Umbrella className="w-5 h-5" />
-            <span>© 2026 Smart Shadow</span>
+            <AnimatePresence mode="wait">
+              <span key={lang}>{t('footer')}</span>
+            </AnimatePresence>
           </div>
           <a
             href="mailto:hello@smartshadow.com"
