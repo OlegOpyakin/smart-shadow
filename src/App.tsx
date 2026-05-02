@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Sun, Moon, Umbrella, Wrench, Eye, Box, Cpu, X, Mail, Send, Phone } from 'lucide-react';
+import {
+  Sun, Moon, Umbrella, Wrench, Eye, Box, Cpu,
+  X, Mail, Send, Phone, ArrowUp
+} from 'lucide-react';
 
 // --- Theme Toggle Hook ---
 const useTheme = () => {
@@ -25,6 +28,7 @@ const useTheme = () => {
 
   return { theme, toggleTheme };
 };
+
 // --- Contact Modal Component ---
 const ContactModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   useEffect(() => {
@@ -51,7 +55,7 @@ const ContactModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className="relative w-full max-w-md rounded-3xl bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 p-8"
-            onClick={(e) => e.stopPropagation()}
+            onClick={e => e.stopPropagation()}
           >
             <button
               onClick={onClose}
@@ -126,6 +130,74 @@ const ContactModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
     </AnimatePresence>
   );
 };
+
+// --- Scroll to Top Button (плавное появление/исчезновение) ---
+const ScrollToTopButton = ({ onOpenModal }: { onOpenModal: () => void }) => {
+  const { scrollY } = useScroll();
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+
+  // обновляем высоту при ресайзе, чтобы пороги оставались актуальными
+  useEffect(() => {
+    const handleResize = () => setWindowHeight(window.innerHeight);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // плавный переход: от 70% до 90% высоты экрана opacity меняется от 0 до 1
+  const opacity = useTransform(
+    scrollY,
+    [windowHeight * 0.7, windowHeight * 0.9],
+    [0, 1]
+  );
+  const x = useTransform(opacity, [0, 1], [-20, 0]);
+
+  /*
+  const handleClick = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // даём скроллу начаться, затем открываем модальное окно
+    setTimeout(() => onOpenModal(), 300);
+  };
+  */
+  const smoothScrollToTop = (duration: number) => {
+    const start = window.scrollY;
+    const startTime = performance.now();
+
+    const animateScroll = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1); // 0..1
+      const ease = progress < 0.5
+        ? 4 * progress * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+      window.scrollTo(0, start * (1 - ease));
+
+      if (progress < 1) {
+        requestAnimationFrame(animateScroll);
+      }
+    };
+
+    requestAnimationFrame(animateScroll);
+  };
+
+  const handleClick = () => {
+    smoothScrollToTop(1000); // ⏱ 800ms — длительность скролла
+    setTimeout(() => onOpenModal(), 1000); // открываем модалку после завершения скролла
+  };
+
+
+  return (
+    <motion.button
+      style={{ opacity, x }}
+      onClick={handleClick}
+      className="fixed top-6 left-6 z-40 flex items-center gap-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 text-sm md:text-base font-medium shadow-lg shadow-blue-600/30 transition-all"
+      aria-label="Scroll to top and request demo"
+    >
+      <ArrowUp className="w-5 h-5" />
+      Request a Demo
+    </motion.button>
+  );
+};
+
 
 // --- Sticky Scroll Section with Apple-style text swap ---
 const StickyShowcase = () => {
@@ -234,6 +306,9 @@ function App() {
     <div className="font-sans antialiased bg-white dark:bg-black text-gray-900 dark:text-white transition-colors duration-300">
       <ContactModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
 
+      {/* Floating "Request a Demo" button (appears on scroll) */}
+      <ScrollToTopButton onOpenModal={() => setIsModalOpen(true)} />
+
       {/* Fixed Theme Toggle */}
       <button
         onClick={toggleTheme}
@@ -285,40 +360,39 @@ function App() {
 
       <StickyShowcase />
 
-{/* The Team Section with Team Photo */}
-<section className="py-24 px-6 md:px-8 bg-white dark:bg-black">
-  <div className="max-w-7xl mx-auto">
-    <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-center mb-12 text-gray-900 dark:text-white">
-      Built by Engineers.
-    </h2>
+      {/* The Team Section with Team Photo */}
+      <section className="py-24 px-6 md:px-8 bg-white dark:bg-black">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-center mb-12 text-gray-900 dark:text-white">
+            Built by Engineers.
+          </h2>
 
-    {/* Team Photo */}
-    <div className="mb-16">
-      <div className="relative rounded-3xl overflow-hidden h-[500px] md:h-[600px] border border-gray-200 dark:border-gray-700">
-        <img
-          src="/images/team.jpeg"
-          alt="Smart Shadow Team"
-          className="w-full h-full object-cover"
-        />
-        {/* Dark pill background behind the caption */}
-        <div className="absolute bottom-8 left-8">
-          <div className="px-6 py-3 rounded-full bg-black/70 backdrop-blur-sm">
-            <span className="text-white text-xl md:text-2xl font-medium">
-              The Smart Shadow Team
-            </span>
+          {/* Team Photo */}
+          <div className="mb-16">
+            <div className="relative rounded-3xl overflow-hidden h-[500px] md:h-[600px] border border-gray-200 dark:border-gray-700">
+              <img
+                src="/images/team.jpeg"
+                alt="Smart Shadow Team"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute bottom-8 left-8">
+                <div className="px-6 py-3 rounded-full bg-black/70 backdrop-blur-sm">
+                  <span className="text-white text-xl md:text-2xl font-medium">
+                    The Smart Shadow Team
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <TeamCard name="Anton Goryainov" role="Mechanical Rotation System" icon={Wrench} />
+            <TeamCard name="Konstantin Lishik" role="Optical Sensors" icon={Eye} />
+            <TeamCard name="Alexander Petryaev" role="Enclosure & Materials" icon={Box} />
+            <TeamCard name="Ivan Turubar" role="Microcontroller Firmware" icon={Cpu} />
           </div>
         </div>
-      </div>
-    </div>
-
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <TeamCard name="Anton Goryainov" role="Mechanical Rotation System" icon={Wrench} />
-      <TeamCard name="Konstantin Lishik" role="Optical Sensors" icon={Eye} />
-      <TeamCard name="Alexander Petryaev" role="Enclosure & Materials" icon={Box} />
-      <TeamCard name="Ivan Turubar" role="Microcontroller Firmware" icon={Cpu} />
-    </div>
-  </div>
-</section>
+      </section>
 
       {/* Use Cases Section */}
       <section className="py-24 px-6 md:px-8 bg-gray-50 dark:bg-gray-950">
@@ -335,7 +409,7 @@ function App() {
               />
               <div className="absolute inset-0 bg-black/20 flex items-end p-8">
                 <div className="px-6 py-3 rounded-full bg-black/50 backdrop-blur-sm">
-                    <h3 className="text-3xl font-semibold text-white">Hotel Terraces</h3>
+                  <h3 className="text-3xl font-semibold text-white">Hotel Terraces</h3>
                 </div>
               </div>
             </div>
@@ -347,7 +421,7 @@ function App() {
               />
               <div className="absolute inset-0 bg-black/20 flex items-end p-8">
                 <div className="px-6 py-3 rounded-full bg-black/50 backdrop-blur-sm">
-                    <h3 className="text-3xl font-semibold text-white">Beach Clubs</h3>
+                  <h3 className="text-3xl font-semibold text-white">Beach Clubs</h3>
                 </div>
               </div>
             </div>
