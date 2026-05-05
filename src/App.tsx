@@ -625,7 +625,7 @@ function App() {
               alt="Smart Shadow Team"
               className="w-full h-auto block"
             />
-            <div className="absolute bottom-8 left-8">
+            <div className="absolute bottom-8 left-8 hidden sm:flex">
               <div className="px-6 py-3 rounded-full bg-black/70 backdrop-blur-sm">
                 <AnimatePresence mode="wait">
                   <span key={lang} className="text-white text-xl md:text-2xl font-medium">
