@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion';
 import {
   Sun, Moon, Umbrella, Wrench, Eye, Box, Cpu,
-  X, Mail, Send, Phone, ArrowUp,
+  X, Mail, Send, ArrowUp, Users, Palette,
 } from 'lucide-react';
 
 // ========================
@@ -12,64 +12,64 @@ const translations = {
   en: {
     heroTitle: 'Smart Shadow.',
     heroSubtitle: 'The shade that follows you. Automatically.',
-    requestDemo: 'Request a Demo',
-    demoTitle: 'Request a Demo',
-    demoDescription: 'Our team is ready to show you how Smart Shadow can transform your outdoor space.',
+    heroCta: 'Discover more',
+    modalTitle: 'Discover more',
+    modalDescription: 'Our team is ready to show you how Smart Shadow can transform your outdoor space.',
     email: 'Email',
     telegram: 'Telegram',
-    phone: 'Phone',
     responseTime: 'We typically respond within a few hours.',
     close: 'Close',
     toggleTheme: 'Toggle theme',
     switchLanguage: 'Switch language (RU)',
-    scrollToTop: 'Scroll to top and request demo',
+    scrollToTop: 'Scroll to top and discover more',
     sticky1Title: 'Tracks the sun in real-time.',
-    sticky1Desc: 'Our proprietary optical sensors continuously adjust the canopy angle.',
-    sticky2Title: 'Powered by motion. No batteries, no wires.',
-    sticky2Desc: "A whisper-quiet mechanism harvests energy from the sun's movement.",
-    sticky3Title: 'Perfect for hotel terraces and beachfronts.',
+    sticky1Desc: 'Our optical sensor continuously tracks the direction of the rays.',
+    sticky2Title: 'Powered by the sun. No wires.',
+    sticky2Desc: 'Solar panels on the canopy fully power the entire system.',
+    sticky3Title: 'Perfect for beach clubs and hotel terraces.',
     sticky3Desc: 'Elevate guest experience with effortless, all-day shade.',
-    teamTitle: 'Built by Engineers.',
+    teamTitle: 'Built by MIPT Engineers.',
     teamCaption: 'The Smart Shadow Team',
-    role1: 'Mechanical Rotation System',
-    role2: 'Optical Sensors',
-    role3: 'Enclosure & Materials',
-    role4: 'Microcontroller Firmware',
+    ivanRole: 'Business Analysis & Programming',
+    konstantinRole: 'Chief Engineer',
+    antonRole: 'Marketing, Sales & Clients',
+    alexanderRole: 'UX/UI Design',
     useCasesTitle: 'Where Comfort Meets Technology.',
     hotel: 'Hotel Terraces',
     beach: 'Beach Clubs',
     footer: '© 2026 Smart Shadow',
+    qrTitle: 'Join our Telegram channel',
   },
   ru: {
     heroTitle: 'Smart Shadow.',
     heroSubtitle: 'Тень, которая следует за вами. Автоматически.',
-    requestDemo: 'Запросить демо',
-    demoTitle: 'Запросить демо',
-    demoDescription: 'Наша команда готова показать, как Smart Shadow преобразит ваше открытое пространство.',
+    heroCta: 'Перейдём к делу?',
+    modalTitle: 'Перейдём к делу?',
+    modalDescription: 'Наша команда готова показать, как Smart Shadow преобразит ваше открытое пространство.',
     email: 'Почта',
     telegram: 'Телеграм',
-    phone: 'Телефон',
     responseTime: 'Обычно отвечаем в течение пары часов.',
     close: 'Закрыть',
     toggleTheme: 'Переключить тему',
     switchLanguage: 'Сменить язык (EN)',
-    scrollToTop: 'Наверх и запросить демо',
-    sticky1Title: 'Следит за солнцем в реальном времени.',
-    sticky1Desc: 'Наши запатентованные оптические датчики непрерывно регулируют угол купола.',
-    sticky2Title: 'Работает от движения. Без батарей и проводов.',
-    sticky2Desc: 'Бесшумный механизм извлекает энергию из перемещения солнца.',
-    sticky3Title: 'Идеально для веранд отелей и пляжных зон.',
-    sticky3Desc: 'Улучшите впечатления гостей, обеспечив лёгкую тень на весь день.',
-    teamTitle: 'Создано инженерами.',
+    scrollToTop: 'Наверх и перейти к делу',
+    sticky1Title: 'Следит за Солнцем в реальном времени.',
+    sticky1Desc: 'Наш оптический датчик непрерывно отслеживает направление лучей.',
+    sticky2Title: 'Работает от Солнца. Без проводов.',
+    sticky2Desc: 'Солнечные панели на куполе полностью питают всю систему.',
+    sticky3Title: 'Идеально для пляжных зон и веранд отелей.',
+    sticky3Desc: 'Улучшите впечатление гостей, обеспечив лёгкую тень на весь день.',
+    teamTitle: 'Создано инженерами МФТИ.',
     teamCaption: 'Команда Smart Shadow',
-    role1: 'Механическая система поворота',
-    role2: 'Оптические датчики',
-    role3: 'Корпус и материалы',
-    role4: 'Встроенное ПО микроконтроллера',
+    ivanRole: 'Бизнес-аналитика и разработка',
+    konstantinRole: 'Главный инженер',
+    antonRole: 'Маркетинг, продажи и клиенты',
+    alexanderRole: 'Дизайн UX/UI',
     useCasesTitle: 'Где комфорт встречается с технологиями.',
     hotel: 'Террасы отелей',
     beach: 'Пляжные клубы',
     footer: '© 2026 Smart Shadow',
+    qrTitle: 'Присоединяйтесь к нашему Телеграм-каналу',
   },
 };
 
@@ -164,7 +164,7 @@ const ContactModal = ({
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="relative w-full max-w-md rounded-3xl bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 p-8"
+            className="relative w-full max-w-md rounded-3xl bg-white/95 dark:bg-gray-950/95 backdrop-blur-xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 p-8"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -185,7 +185,7 @@ const ContactModal = ({
                   transition={{ duration: 0.25 }}
                   className="text-2xl font-semibold text-gray-900 dark:text-white"
                 >
-                  {t('demoTitle')}
+                  {t('modalTitle')}
                 </motion.h3>
               </AnimatePresence>
             </div>
@@ -199,14 +199,14 @@ const ContactModal = ({
                   transition={{ duration: 0.25, delay: 0.05 }}
                   className="text-gray-700 dark:text-gray-200"
                 >
-                  {t('demoDescription')}
+                  {t('modalDescription')}
                 </motion.p>
               </AnimatePresence>
             </div>
 
             <div className="space-y-5">
               <a
-                href="mailto:hello@smartshadow.com"
+                href="mailto:smartshadowofficial@gmail.com"
                 className="flex items-center gap-4 p-4 rounded-2xl bg-gray-100 dark:bg-gray-900/70 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors group"
               >
                 <div className="p-2 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
@@ -215,7 +215,7 @@ const ContactModal = ({
                 <div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">{t('email')}</div>
                   <div className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                    hello@smartshadow.com
+                    smartshadowofficial@gmail.com
                   </div>
                 </div>
               </a>
@@ -233,21 +233,6 @@ const ContactModal = ({
                   <div className="text-sm text-gray-600 dark:text-gray-400">{t('telegram')}</div>
                   <div className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
                     @suntrasher
-                  </div>
-                </div>
-              </a>
-
-              <a
-                href="tel:+1234567890"
-                className="flex items-center gap-4 p-4 rounded-2xl bg-gray-100 dark:bg-gray-900/70 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors group"
-              >
-                <div className="p-2 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
-                  <Phone className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">{t('phone')}</div>
-                  <div className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                    +1 (234) 567-890
                   </div>
                 </div>
               </a>
@@ -322,7 +307,7 @@ const ScrollToTopButton = ({
       aria-label={t('scrollToTop')}
     >
       <ArrowUp className="w-5 h-5" />
-      {t('requestDemo')}
+      {t('heroCta')}
     </motion.button>
   );
 };
@@ -483,22 +468,28 @@ const UmbrellaIllustration = () => (
 );
 
 // ========================
-//      TEAM CARD (FIXED)
+//      TEAM CARD (UPDATED)
 // ========================
 const TeamCard = ({
   name,
   role,
   icon: Icon,
   lang,
+  image,
 }: {
   name: string;
   role: string;
   icon: React.ElementType;
   lang: 'en' | 'ru';
+  image?: string;
 }) => (
   <div className="h-full bg-gray-50 dark:bg-gray-900 rounded-3xl p-6 flex flex-col items-center text-center border border-gray-100 dark:border-gray-800">
-    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-2xl font-medium mb-4">
-      {name.split(' ').map(n => n[0]).join('')}
+    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-2xl font-medium mb-4 overflow-hidden">
+      {image ? (
+        <img src={image} alt={name} className="w-full h-full object-cover" />
+      ) : (
+        name.split(' ').map(n => n[0]).join('')
+      )}
     </div>
     <h4 className="text-lg font-semibold text-gray-900 dark:text-white">{name}</h4>
     <div className="flex items-center gap-2 mt-1 text-sm text-gray-500 dark:text-gray-400 min-h-[3rem]">
@@ -603,7 +594,7 @@ function App() {
             onClick={() => setIsModalOpen(true)}
             className="rounded-full bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-medium shadow-lg shadow-blue-600/30 transition-all"
           >
-            {t('requestDemo')}
+            {t('heroCta')}
           </motion.button>
         </div>
       </section>
@@ -629,11 +620,12 @@ function App() {
           </div>
 
           <div className="mb-16">
-            <div className="relative rounded-3xl overflow-hidden h-[500px] md:h-[600px] border border-gray-200 dark:border-gray-700">
+            <div className="relative rounded-3xl overflow-hidden h-[600px] md:h-[750px] border border-gray-200 dark:border-gray-700">
               <img
                 src="/images/team.jpeg"
                 alt="Smart Shadow Team"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover object-top"
+                style={{ objectPosition: 'top' }}
               />
               <div className="absolute bottom-8 left-8">
                 <div className="px-6 py-3 rounded-full bg-black/70 backdrop-blur-sm">
@@ -648,10 +640,10 @@ function App() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <TeamCard name="Anton Goryainov" role={t('role1')} icon={Wrench} lang={lang} />
-            <TeamCard name="Konstantin Lishik" role={t('role2')} icon={Eye} lang={lang} />
-            <TeamCard name="Alexander Petryaev" role={t('role3')} icon={Box} lang={lang} />
-            <TeamCard name="Ivan Turubar" role={t('role4')} icon={Cpu} lang={lang} />
+            <TeamCard name="Ivan Turubar" role={t('ivanRole')} icon={Cpu} lang={lang} image="/images/team/Ivan.jpeg" />
+            <TeamCard name="Konstantin Lishik" role={t('konstantinRole')} icon={Wrench} lang={lang} image="/images/team/Konstantin.jpeg" />
+            <TeamCard name="Anton Goryainov" role={t('antonRole')} icon={Users} lang={lang} image="/images/team/Anton.JPG" />
+            <TeamCard name="Alexander Petryaev" role={t('alexanderRole')} icon={Palette} lang={lang} image="/images/team/Alexander.jpg" />
           </div>
         </div>
       </section>
@@ -724,20 +716,40 @@ function App() {
         </div>
       </section>
 
+      {/* QR Code Section */}
+      <section className="py-16 px-6 bg-white dark:bg-black">
+        <div className="max-w-4xl mx-auto text-center">
+          <h3 className="text-2xl font-semibold mb-8 text-gray-900 dark:text-white">
+            {t('qrTitle')}
+          </h3>
+          <img
+            src="/images/t_me.jpg"
+            alt="Telegram QR code"
+            className="mx-auto w-48 h-48 md:w-64 md:h-64 object-contain rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700"
+          />
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="py-12 px-6 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
-          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 min-h-[2rem]">
-            <Umbrella className="w-5 h-5 flex-shrink-0" />
+          <div className="flex items-center gap-4">
+            <Umbrella className="w-5 h-5 text-gray-500 dark:text-gray-400 flex-shrink-0" />
             <AnimatePresence mode="wait">
-              <span key={lang}>{t('footer')}</span>
+              <span key={lang} className="text-gray-500 dark:text-gray-400">
+                {t('footer')}
+              </span>
             </AnimatePresence>
           </div>
+          <div className="flex items-center gap-5 mt-4 md:mt-0">
+            <img src="/images/FSI.png" alt="FSI emblem" className="h-20 w-auto object-contain" />
+            <img src="/images/MIPT.png" alt="MIPT logo" className="h-20 w-auto object-contain" />
+          </div>
           <a
-            href="mailto:hello@smartshadow.com"
+            href="mailto:smartshadowofficial@gmail.com"
             className="mt-4 md:mt-0 text-blue-600 dark:text-blue-400 hover:underline"
           >
-            hello@smartshadow.com
+            smartshadowofficial@gmail.com
           </a>
         </div>
       </footer>
