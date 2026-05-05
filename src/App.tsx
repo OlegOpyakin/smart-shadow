@@ -619,22 +619,19 @@ function App() {
             </AnimatePresence>
           </div>
 
-          <div className="mb-16">
-            <div className="relative rounded-3xl overflow-hidden h-[600px] md:h-[750px] border border-gray-200 dark:border-gray-700">
-              <img
-                src="/images/team.jpeg"
-                alt="Smart Shadow Team"
-                className="w-full h-full object-cover object-top"
-                style={{ objectPosition: 'top' }}
-              />
-              <div className="absolute bottom-8 left-8">
-                <div className="px-6 py-3 rounded-full bg-black/70 backdrop-blur-sm">
-                  <AnimatePresence mode="wait">
-                    <span key={lang} className="text-white text-xl md:text-2xl font-medium">
-                      {t('teamCaption')}
-                    </span>
-                  </AnimatePresence>
-                </div>
+          <div className="relative rounded-3xl overflow-hidden border border-gray-200 dark:border-gray-700 max-w-5xl mx-auto mb-16">
+            <img
+              src="/images/team.jpeg"
+              alt="Smart Shadow Team"
+              className="w-full h-auto block"
+            />
+            <div className="absolute bottom-8 left-8">
+              <div className="px-6 py-3 rounded-full bg-black/70 backdrop-blur-sm">
+                <AnimatePresence mode="wait">
+                  <span key={lang} className="text-white text-xl md:text-2xl font-medium">
+                    {t('teamCaption')}
+                  </span>
+                </AnimatePresence>
               </div>
             </div>
           </div>
