@@ -4,6 +4,7 @@ import {
   Sun, Moon, Umbrella, Wrench, Cpu,
   X, Mail, Send, ArrowUp, Users, Palette,
 } from 'lucide-react';
+import Umbrella3DScene from './components/Umbrella3DScene';
 
 // ========================
 //        TRANSLATIONS
@@ -318,15 +319,24 @@ const ScrollToTopButton = ({
 const StickyShowcase = ({
   t,
   lang,
+  theme,
 }: {
   t: (key: keyof typeof translations['en']) => string;
   lang: 'en' | 'ru';
+  theme: 'light' | 'dark';
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start start', 'end end'],
   });
+
+  // Конвертируем MotionValue в обычный number для передачи в Canvas
+  const [progress, setProgress] = useState(0);
+  useEffect(() => {
+    const unsub = scrollYProgress.on('change', (v) => setProgress(v));
+    return unsub;
+  }, [scrollYProgress]);
 
   const opacity1 = useTransform(scrollYProgress, [0, 0.33, 0.4], [1, 1, 0]);
   const opacity2 = useTransform(scrollYProgress, [0.3, 0.4, 0.66, 0.73], [0, 1, 1, 0]);
@@ -336,13 +346,12 @@ const StickyShowcase = ({
     <section ref={containerRef} className="relative h-[300vh] bg-white dark:bg-black">
       <div className="sticky top-0 h-screen flex items-center overflow-hidden">
         <div className="w-full max-w-7xl mx-auto px-6 md:px-8 flex flex-col md:flex-row items-center gap-12 md:gap-16">
-          <div className="w-full md:w-1/2 flex justify-center">
-            <div className="relative w-80 h-80 md:w-[500px] md:h-[500px]">
-              <UmbrellaIllustration />
-            </div>
+          <div className="w-full md:w-1/2 h-[70vh] md:h-[80vh]">
+            <Umbrella3DScene progress={progress} theme={theme} />
           </div>
 
           <div className="w-full md:w-1/2 relative h-64 md:h-80">
+
             <motion.div style={{ opacity: opacity1 }} className="absolute inset-0 flex flex-col justify-center">
               <div className="min-h-[12rem] md:min-h-[16rem]">
                 <AnimatePresence mode="wait">
@@ -436,36 +445,6 @@ const StickyShowcase = ({
   );
 };
 
-// ========================
-//   UMBRELLA ILLUSTRATION
-// ========================
-const UmbrellaIllustration = () => (
-  <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-    <path
-      d="M60 180 C60 80, 160 40, 200 40 C240 40, 340 80, 340 180"
-      stroke="currentColor" strokeWidth="6" strokeLinecap="round"
-      className="text-blue-500 dark:text-blue-400" fill="none"
-    />
-    <path
-      d="M80 160 C100 100, 160 70, 200 70 C240 70, 300 100, 320 160"
-      stroke="currentColor" strokeWidth="3" strokeLinecap="round"
-      className="text-blue-400/60 dark:text-blue-300/60" fill="none"
-    />
-    <line x1="200" y1="180" x2="200" y2="320" stroke="currentColor"
-      strokeWidth="8" strokeLinecap="round"
-      className="text-gray-700 dark:text-gray-300" />
-    <rect x="170" y="310" width="60" height="20" rx="10"
-      fill="currentColor" className="text-gray-600 dark:text-gray-400" />
-    <circle cx="200" cy="330" r="15" fill="currentColor"
-      className="text-gray-500 dark:text-gray-500" />
-    <circle cx="200" cy="330" r="8" fill="currentColor"
-      className="text-gray-300 dark:text-gray-600" />
-    <circle cx="200" cy="190" r="30" stroke="currentColor" strokeWidth="2"
-      className="text-gray-400/50 dark:text-gray-500/50" fill="none" />
-    <circle cx="200" cy="190" r="22" stroke="currentColor" strokeWidth="1.5"
-      strokeDasharray="4 4" className="text-gray-400/70 dark:text-gray-500/70" fill="none" />
-  </svg>
-);
 
 // ========================
 //      TEAM CARD (UPDATED)
@@ -599,7 +578,7 @@ function App() {
         </div>
       </section>
 
-      <StickyShowcase t={t} lang={lang} />
+      <StickyShowcase t={t} lang={lang} theme={theme} />
 
       {/* Team Section */}
       <section className="py-24 px-6 md:px-8 bg-white dark:bg-black">
