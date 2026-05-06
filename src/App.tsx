@@ -346,7 +346,7 @@ const StickyShowcase = ({
     <section ref={containerRef} className="relative h-[300vh] bg-white dark:bg-black">
       <div className="sticky top-0 h-screen flex items-center overflow-hidden">
         <div className="w-full max-w-7xl mx-auto px-6 md:px-8 flex flex-col md:flex-row items-center gap-12 md:gap-16">
-          <div className="w-full md:w-1/2 h-[70vh] md:h-[80vh]">
+          <div className="w-full md:w-1/2 h-[55vh] md:h-[80vh] mt-20 md:mt-0 flex items-center justify-center">
             <Umbrella3DScene progress={progress} theme={theme} />
           </div>
 
