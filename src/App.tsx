@@ -210,7 +210,7 @@ const ContactModal = ({
                 </div>
                 <div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">{t('email')}</div>
-                  <div className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                  <div className="text-sm md:text-base font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
                     smartshadowofficial@gmail.com
                   </div>
                 </div>
@@ -227,7 +227,7 @@ const ContactModal = ({
                 </div>
                 <div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">{t('telegram')}</div>
-                  <div className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                  <div className="ftext-sm md:text-base font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
                     @suntrasher
                   </div>
                 </div>
