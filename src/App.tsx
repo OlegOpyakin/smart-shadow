@@ -4,6 +4,7 @@ import {
   Sun, Moon, Umbrella, Wrench, Cpu,
   X, Mail, Send, ArrowUp, Users, Palette,
 } from 'lucide-react';
+import { useProgress } from '@react-three/drei'; // Добавлено для трекинга 3D модели
 import Umbrella3DScene from './components/Umbrella3DScene';
 
 // ========================
@@ -79,14 +80,12 @@ const translations = {
 // ========================
 const useLanguage = () => {
   const [lang, setLang] = useState<'en' | 'ru'>('en');
-
   useEffect(() => {
     const stored = localStorage.getItem('lang') as 'en' | 'ru' | null;
     const browserLang = navigator.language.startsWith('ru') ? 'ru' : 'en';
     const initial = stored ?? browserLang;
     setLang(initial);
   }, []);
-
   const toggleLanguage = () => {
     setLang(prev => {
       const next = prev === 'en' ? 'ru' : 'en';
@@ -94,11 +93,9 @@ const useLanguage = () => {
       return next;
     });
   };
-
   const t = useCallback((key: keyof typeof translations['en']) => {
     return translations[lang]?.[key] ?? translations['en'][key] ?? key;
   }, [lang]);
-
   return { lang, toggleLanguage, t };
 };
 
@@ -107,7 +104,6 @@ const useLanguage = () => {
 // ========================
 const useTheme = () => {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
-
   useEffect(() => {
     const stored = localStorage.getItem('theme') as 'light' | 'dark' | null;
     const systemPrefers = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -115,7 +111,6 @@ const useTheme = () => {
     setTheme(initial);
     document.documentElement.classList.toggle('dark', initial === 'dark');
   }, []);
-
   const toggleTheme = () => {
     setTheme(prev => {
       const next = prev === 'light' ? 'dark' : 'light';
@@ -124,7 +119,6 @@ const useTheme = () => {
       return next;
     });
   };
-
   return { theme, toggleTheme };
 };
 
@@ -175,7 +169,6 @@ const ContactModal = ({
             >
               <X className="w-5 h-5 text-gray-700 dark:text-gray-300" />
             </button>
-
             <div className="min-h-[4rem] mb-6">
               <AnimatePresence mode="wait">
                 <motion.h3
@@ -271,17 +264,14 @@ const ScrollToTopButton = ({
   t: (key: keyof typeof translations['en']) => string;
 }) => {
   const { scrollY } = useScroll();
-
   const rawOpacity = useTransform(scrollY, [200, 400], [0, 1]);
   const opacity = useSpring(rawOpacity, { stiffness: 200, damping: 30 });
-
   const rawX = useTransform(rawOpacity, [0, 1], [-20, 0]);
   const x = useSpring(rawX, { stiffness: 200, damping: 30 });
 
   const smoothScrollToTop = (duration: number) => {
     const start = window.scrollY;
     const startTime = performance.now();
-
     const animateScroll = (currentTime: number) => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
@@ -291,7 +281,6 @@ const ScrollToTopButton = ({
       window.scrollTo(0, start * (1 - ease));
       if (progress < 1) requestAnimationFrame(animateScroll);
     };
-
     requestAnimationFrame(animateScroll);
   };
 
@@ -330,8 +319,6 @@ const StickyShowcase = ({
     target: containerRef,
     offset: ['start start', 'end end'],
   });
-
-  // Конвертируем MotionValue в обычный number для передачи в Canvas
   const [progress, setProgress] = useState(0);
   useEffect(() => {
     const unsub = scrollYProgress.on('change', (v) => setProgress(v));
@@ -349,7 +336,6 @@ const StickyShowcase = ({
           <div className="w-full md:w-1/2 h-[55vh] md:h-[80vh] mt-20 md:mt-0 flex items-center justify-center">
             <Umbrella3DScene progress={progress} theme={theme} />
           </div>
-
           <div className="w-full md:w-1/2 relative h-64 md:h-80">
 
             <motion.div style={{ opacity: opacity1 }} className="absolute inset-0 flex flex-col justify-center">
@@ -445,7 +431,6 @@ const StickyShowcase = ({
   );
 };
 
-
 // ========================
 //      TEAM CARD (UPDATED)
 // ========================
@@ -496,15 +481,85 @@ function App() {
   const { lang, toggleLanguage, t } = useLanguage();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // ==========================================
+  // PRELOADER LOGIC
+  // ==========================================
+  const { loaded, total } = useProgress(); // Отслеживает загрузку 3D модели глобально
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [isAppLoading, setIsAppLoading] = useState(true);
+  const [fadeOut, setFadeOut] = useState(false);
+
+  // Загружаем hero-картинку в фоне для трекинга
+  useEffect(() => {
+    const img = new Image();
+    img.src = '/images/hero.jpg';
+    img.onload = () => setImageLoaded(true);
+    img.onerror = () => setImageLoaded(true);
+  }, []);
+
+  // Ждем, пока загрузятся ОБА ассета
+  useEffect(() => {
+    // Fallback: если что-то пошло не так (например, блокировщик рекламы), скрываем прелоадер через 10 секунд
+    const maxTimeout = setTimeout(() => {
+      setFadeOut(true);
+      setTimeout(() => setIsAppLoading(false), 800);
+    }, 10000);
+
+    if (imageLoaded && total > 0 && loaded === total) {
+      const timer = setTimeout(() => {
+        setFadeOut(true);
+        setTimeout(() => setIsAppLoading(false), 800); // 800мс на плавное исчезновение
+      }, 400); // Небольшая задержка, чтобы React успел отрисовать первый кадр
+      
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(maxTimeout);
+      };
+    }
+    return () => clearTimeout(maxTimeout);
+  }, [imageLoaded, loaded, total]);
+
   return (
     <div className="font-sans antialiased bg-white dark:bg-black text-gray-900 dark:text-white transition-colors duration-300">
+      
+      {/* PRELOADER OVERLAY */}
+      {isAppLoading && (
+        <motion.div
+          initial={{ opacity: 1 }}
+          animate={{ opacity: fadeOut ? 0 : 1 }}
+          transition={{ duration: 0.8, ease: "easeInOut" }}
+          className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white dark:bg-black"
+          style={{ pointerEvents: fadeOut ? 'none' : 'auto' }}
+        >
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col items-center gap-8"
+          >
+            <Umbrella className="w-16 h-16 text-blue-600" />
+            <div className="flex flex-col items-center gap-3 w-64">
+              <div className="w-full h-1 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
+                 <motion.div 
+                   className="h-full bg-blue-600"
+                   animate={{ width: total > 0 ? `${(loaded / total) * 100}%` : "10%" }}
+                   transition={{ duration: 0.3, ease: "easeOut" }}
+                 />
+              </div>
+              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium tracking-wide tabular-nums">
+                {total > 0 ? `${Math.round((loaded / total) * 100)}%` : 'Initializing...'}
+              </p>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+
       <ContactModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         t={t}
         lang={lang}
       />
-
       <ScrollToTopButton
         onOpenModal={() => setIsModalOpen(true)}
         t={t}
