@@ -4,7 +4,7 @@ import {
   Sun, Moon, Umbrella, Wrench, Cpu,
   X, Mail, Send, ArrowUp, Users, Palette,
 } from 'lucide-react';
-import { useProgress } from '@react-three/drei'; // Добавлено для трекинга 3D модели
+import { useProgress } from '@react-three/drei';
 import Umbrella3DScene from './components/Umbrella3DScene';
 
 // ========================
@@ -41,6 +41,7 @@ const translations = {
     beach: 'Beach Clubs',
     footer: '© 2026 Smart Shadow',
     qrTitle: 'Join our Telegram channel',
+    loadingWebsite: 'Loading website...',
   },
   ru: {
     heroTitle: 'Smart Shadow.',
@@ -72,6 +73,7 @@ const translations = {
     beach: 'Пляжные клубы',
     footer: '© 2026 Smart Shadow',
     qrTitle: 'Присоединяйтесь к нашему Телеграм-каналу',
+    loadingWebsite: 'Загрузка сайта...',
   },
 };
 
@@ -484,32 +486,31 @@ function App() {
   // ==========================================
   // PRELOADER LOGIC
   // ==========================================
-  const { loaded, total } = useProgress(); // Отслеживает загрузку 3D модели глобально
-  const [imageLoaded, setImageLoaded] = useState(false);
+  const { loaded, total } = useProgress();
+  const [heroLoaded, setHeroLoaded] = useState(false);
   const [isAppLoading, setIsAppLoading] = useState(true);
   const [fadeOut, setFadeOut] = useState(false);
+  const mountTime = useRef(Date.now());
 
-  // Загружаем hero-картинку в фоне для трекинга
+  // Ждём, пока загрузятся ОБА ассета: 3D модель И hero-картинка в DOM
   useEffect(() => {
-    const img = new Image();
-    img.src = '/images/hero.jpg';
-    img.onload = () => setImageLoaded(true);
-    img.onerror = () => setImageLoaded(true);
-  }, []);
-
-  // Ждем, пока загрузятся ОБА ассета
-  useEffect(() => {
-    // Fallback: если что-то пошло не так (например, блокировщик рекламы), скрываем прелоадер через 10 секунд
+    // Fallback: если что-то пошло не так, скрываем прелоадер через 12 секунд
     const maxTimeout = setTimeout(() => {
       setFadeOut(true);
       setTimeout(() => setIsAppLoading(false), 800);
-    }, 10000);
+    }, 12000);
 
-    if (imageLoaded && total > 0 && loaded === total) {
+    // Проверяем, загружена ли 3D модель
+    // Если total === 0 и прошло больше 1.5 сек — считаем модель загруженной (кэш или её нет)
+    const elapsed = Date.now() - mountTime.current;
+    const modelReady = total > 0 ? loaded === total : elapsed > 1500;
+
+    if (heroLoaded && modelReady) {
+      // Небольшая задержка, чтобы браузер успел отрисовать картинку (composite)
       const timer = setTimeout(() => {
         setFadeOut(true);
-        setTimeout(() => setIsAppLoading(false), 800); // 800мс на плавное исчезновение
-      }, 400); // Небольшая задержка, чтобы React успел отрисовать первый кадр
+        setTimeout(() => setIsAppLoading(false), 800);
+      }, 200);
       
       return () => {
         clearTimeout(timer);
@@ -517,7 +518,7 @@ function App() {
       };
     }
     return () => clearTimeout(maxTimeout);
-  }, [imageLoaded, loaded, total]);
+  }, [heroLoaded, loaded, total]);
 
   return (
     <div className="font-sans antialiased bg-white dark:bg-black text-gray-900 dark:text-white transition-colors duration-300">
@@ -535,21 +536,26 @@ function App() {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="flex flex-col items-center gap-8"
+            className="flex flex-col items-center gap-6"
           >
-            <Umbrella className="w-16 h-16 text-blue-600" />
-            <div className="flex flex-col items-center gap-3 w-64">
-              <div className="w-full h-1 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
-                 <motion.div 
-                   className="h-full bg-blue-600"
-                   animate={{ width: total > 0 ? `${(loaded / total) * 100}%` : "10%" }}
-                   transition={{ duration: 0.3, ease: "easeOut" }}
-                 />
-              </div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium tracking-wide tabular-nums">
-                {total > 0 ? `${Math.round((loaded / total) * 100)}%` : 'Initializing...'}
-              </p>
-            </div>
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            >
+              <Umbrella className="w-14 h-14 text-blue-600" />
+            </motion.div>
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={lang}
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -5 }}
+                transition={{ duration: 0.25 }}
+                className="text-base text-gray-500 dark:text-gray-400 font-medium tracking-wide"
+              >
+                {t('loadingWebsite')}
+              </motion.p>
+            </AnimatePresence>
           </motion.div>
         </motion.div>
       )}
@@ -590,6 +596,8 @@ function App() {
             src="/images/hero.jpg"
             alt="Beach umbrella"
             className="w-full h-full object-cover"
+            onLoad={() => setHeroLoaded(true)}
+            onError={() => setHeroLoaded(true)}
           />
           <div className="absolute inset-0 bg-black/30 dark:bg-black/50" />
         </div>
