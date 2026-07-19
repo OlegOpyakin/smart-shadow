@@ -5,7 +5,6 @@ import {
   X, Mail, Send, ArrowUp, Users, Palette,
 } from 'lucide-react';
 import { useProgress } from '@react-three/drei';
-import Umbrella3DScene from './components/Umbrella3DScene';
 
 // ========================
 //        TRANSLATIONS
@@ -105,11 +104,10 @@ const useLanguage = () => {
 //        THEME HOOK
 // ========================
 const useTheme = () => {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   useEffect(() => {
     const stored = localStorage.getItem('theme') as 'light' | 'dark' | null;
-    const systemPrefers = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const initial = stored ?? (systemPrefers ? 'dark' : 'light');
+    const initial = stored ?? 'dark';
     setTheme(initial);
     document.documentElement.classList.toggle('dark', initial === 'dark');
   }, []);
