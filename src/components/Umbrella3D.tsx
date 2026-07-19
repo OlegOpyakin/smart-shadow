@@ -10,7 +10,7 @@ interface Props {
 export default function Umbrella3D({ scrollProgress }: Props) {
   const spinRef = useRef<THREE.Group>(null);   // только вращение
   const modelRef = useRef<THREE.Group>(null);  // позиция + масштаб
-  const { scene } = useGLTF('/models/umbrella.glb');
+  const { scene } = useGLTF('/models/umbrella.glb', true);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {

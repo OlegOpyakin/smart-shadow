@@ -1,10 +1,77 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion';
 import {
   Sun, Moon, Umbrella, Wrench, Cpu,
   X, Mail, Send, ArrowUp, Users, Palette,
 } from 'lucide-react';
-import { useProgress } from '@react-three/drei';
+
+const Umbrella3DScene = lazy(() => import('./components/Umbrella3DScene'));
+
+/** Prefer AVIF/WebP with JPEG/PNG fallback; lazy by default except hero. */
+const SmartImage = ({
+  src,
+  webp,
+  avif,
+  alt,
+  className,
+  width,
+  height,
+  eager = false,
+  fetchPriority,
+  onLoad,
+  onError,
+  sizes,
+  srcSet,
+  webpSrcSet,
+  avifSrcSet,
+}: {
+  src: string;
+  webp?: string;
+  avif?: string;
+  alt: string;
+  className?: string;
+  width?: number;
+  height?: number;
+  eager?: boolean;
+  fetchPriority?: 'high' | 'low' | 'auto';
+  onLoad?: () => void;
+  onError?: () => void;
+  sizes?: string;
+  srcSet?: string;
+  webpSrcSet?: string;
+  avifSrcSet?: string;
+}) => (
+  <picture>
+    {avif && (
+      <source
+        type="image/avif"
+        srcSet={avifSrcSet ?? avif}
+        sizes={sizes}
+      />
+    )}
+    {webp && (
+      <source
+        type="image/webp"
+        srcSet={webpSrcSet ?? webp}
+        sizes={sizes}
+      />
+    )}
+    <img
+      src={src}
+      srcSet={srcSet}
+      sizes={sizes}
+      alt={alt}
+      className={className}
+      width={width}
+      height={height}
+      loading={eager ? 'eager' : 'lazy'}
+      decoding={eager ? 'sync' : 'async'}
+      fetchPriority={fetchPriority}
+      onLoad={onLoad}
+      onError={onError}
+    />
+  </picture>
+);
 
 // ========================
 //        TRANSLATIONS
@@ -315,11 +382,29 @@ const StickyShowcase = ({
   theme: 'light' | 'dark';
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [shouldLoad3D, setShouldLoad3D] = useState(false);
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start start', 'end end'],
   });
   const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldLoad3D(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '200px 0px' },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   useEffect(() => {
     const unsub = scrollYProgress.on('change', (v) => setProgress(v));
     return unsub;
@@ -334,7 +419,19 @@ const StickyShowcase = ({
       <div className="sticky top-0 h-screen flex items-center overflow-hidden">
         <div className="w-full max-w-7xl mx-auto px-6 md:px-8 flex flex-col md:flex-row items-center gap-12 md:gap-16">
           <div className="w-full md:w-1/2 h-[55vh] md:h-[80vh] mt-20 md:mt-0 flex items-center justify-center">
-            <Umbrella3DScene progress={progress} theme={theme} />
+            {shouldLoad3D ? (
+              <Suspense
+                fallback={
+                  <div className="w-full h-full flex items-center justify-center text-gray-400">
+                    Loading 3D...
+                  </div>
+                }
+              >
+                <Umbrella3DScene progress={progress} theme={theme} />
+              </Suspense>
+            ) : (
+              <div className="w-full h-full" aria-hidden />
+            )}
           </div>
           <div className="w-full md:w-1/2 relative h-64 md:h-80">
 
@@ -440,17 +537,26 @@ const TeamCard = ({
   icon: Icon,
   lang,
   image,
+  imageWebp,
 }: {
   name: string;
   role: string;
   icon: React.ElementType;
   lang: 'en' | 'ru';
   image?: string;
+  imageWebp?: string;
 }) => (
   <div className="h-full bg-gray-50 dark:bg-gray-900 rounded-3xl p-6 flex flex-col items-center text-center border border-gray-100 dark:border-gray-800">
     <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-2xl font-medium mb-4 overflow-hidden">
       {image ? (
-        <img src={image} alt={name} className="w-full h-full object-cover" />
+        <SmartImage
+          src={image}
+          webp={imageWebp}
+          alt={name}
+          className="w-full h-full object-cover"
+          width={80}
+          height={80}
+        />
       ) : (
         name.split(' ').map(n => n[0]).join('')
       )}
@@ -481,42 +587,29 @@ function App() {
   const { lang, toggleLanguage, t } = useLanguage();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // ==========================================
-  // PRELOADER LOGIC
-  // ==========================================
-  const { loaded, total } = useProgress();
+  // Splash waits only on the hero image — 3D loads later when scrolled into view
   const [heroLoaded, setHeroLoaded] = useState(false);
   const [isAppLoading, setIsAppLoading] = useState(true);
   const [fadeOut, setFadeOut] = useState(false);
-  const mountTime = useRef(Date.now());
 
-  // Ждём, пока загрузятся ОБА ассета: 3D модель И hero-картинка в DOM
   useEffect(() => {
-    // Fallback: если что-то пошло не так, скрываем прелоадер через 12 секунд
     const maxTimeout = setTimeout(() => {
       setFadeOut(true);
       setTimeout(() => setIsAppLoading(false), 800);
-    }, 12000);
+    }, 8000);
 
-    // Проверяем, загружена ли 3D модель
-    // Если total === 0 и прошло больше 1.5 сек — считаем модель загруженной (кэш или её нет)
-    const elapsed = Date.now() - mountTime.current;
-    const modelReady = total > 0 ? loaded === total : elapsed > 1500;
-
-    if (heroLoaded && modelReady) {
-      // Небольшая задержка, чтобы браузер успел отрисовать картинку (composite)
+    if (heroLoaded) {
       const timer = setTimeout(() => {
         setFadeOut(true);
         setTimeout(() => setIsAppLoading(false), 800);
-      }, 200);
-      
+      }, 150);
       return () => {
         clearTimeout(timer);
         clearTimeout(maxTimeout);
       };
     }
     return () => clearTimeout(maxTimeout);
-  }, [heroLoaded, loaded, total]);
+  }, [heroLoaded]);
 
   return (
     <div className="font-sans antialiased bg-white dark:bg-black text-gray-900 dark:text-white transition-colors duration-300">
@@ -590,10 +683,17 @@ function App() {
       {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img
+          <SmartImage
             src="/images/hero.jpg"
+            webp="/images/hero-2560.webp"
+            avif="/images/hero-2560.avif"
+            webpSrcSet="/images/hero-1280.webp 1280w, /images/hero-2560.webp 2560w"
+            avifSrcSet="/images/hero-1280.avif 1280w, /images/hero-2560.avif 2560w"
+            sizes="100vw"
             alt="Beach umbrella"
             className="w-full h-full object-cover"
+            eager
+            fetchPriority="high"
             onLoad={() => setHeroLoaded(true)}
             onError={() => setHeroLoaded(true)}
           />
@@ -660,8 +760,9 @@ function App() {
           </div>
 
           <div className="relative rounded-3xl overflow-hidden border border-gray-200 dark:border-gray-700 max-w-5xl mx-auto mb-16">
-            <img
+            <SmartImage
               src="/images/team.jpeg"
+              webp="/images/team.webp"
               alt="Smart Shadow Team"
               className="w-full h-auto block"
             />
@@ -677,10 +778,10 @@ function App() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <TeamCard name="Ivan Turubar" role={t('ivanRole')} icon={Cpu} lang={lang} image="/images/team/Ivan.jpeg" />
-            <TeamCard name="Konstantin Lishik" role={t('konstantinRole')} icon={Wrench} lang={lang} image="/images/team/Konstantin.jpeg" />
-            <TeamCard name="Anton Goryainov" role={t('antonRole')} icon={Users} lang={lang} image="/images/team/Anton.JPG" />
-            <TeamCard name="Alexander Petryaev" role={t('alexanderRole')} icon={Palette} lang={lang} image="/images/team/Alexander.jpg" />
+            <TeamCard name="Ivan Turubar" role={t('ivanRole')} icon={Cpu} lang={lang} image="/images/team/Ivan.jpeg" imageWebp="/images/team/Ivan.webp" />
+            <TeamCard name="Konstantin Lishik" role={t('konstantinRole')} icon={Wrench} lang={lang} image="/images/team/Konstantin.jpeg" imageWebp="/images/team/Konstantin.webp" />
+            <TeamCard name="Anton Goryainov" role={t('antonRole')} icon={Users} lang={lang} image="/images/team/Anton.JPG" imageWebp="/images/team/Anton.webp" />
+            <TeamCard name="Alexander Petryaev" role={t('alexanderRole')} icon={Palette} lang={lang} image="/images/team/Alexander.jpg" imageWebp="/images/team/Alexander.webp" />
           </div>
         </div>
       </section>
@@ -704,8 +805,9 @@ function App() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             <div className="relative rounded-3xl overflow-hidden h-80 md:h-96 group">
-              <img
+              <SmartImage
                 src="/images/hotel.jpeg"
+                webp="/images/hotel.webp"
                 alt="Hotel terrace"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
@@ -727,8 +829,9 @@ function App() {
               </div>
             </div>
             <div className="relative rounded-3xl overflow-hidden h-80 md:h-96 group">
-              <img
+              <SmartImage
                 src="/images/beach.jpeg"
+                webp="/images/beach.webp"
                 alt="Beach club"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
@@ -759,10 +862,13 @@ function App() {
           <h3 className="text-2xl font-semibold mb-8 text-gray-900 dark:text-white">
             {t('qrTitle')}
           </h3>
-          <img
+          <SmartImage
             src="/images/t_me.jpg"
+            webp="/images/t_me.webp"
             alt="Telegram QR code"
             className="mx-auto w-48 h-48 md:w-64 md:h-64 object-contain rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700"
+            width={256}
+            height={256}
           />
         </div>
       </section>
@@ -779,8 +885,8 @@ function App() {
             </AnimatePresence>
           </div>
           <div className="flex items-center gap-5 mt-4 md:mt-0">
-            <img src="/images/FSI.png" alt="FSI emblem" className="h-20 w-auto object-contain" />
-            <img src="/images/MIPT.png" alt="MIPT logo" className="h-20 w-auto object-contain" />
+            <img src="/images/FSI.png" alt="FSI emblem" className="h-20 w-auto object-contain" loading="lazy" decoding="async" />
+            <img src="/images/MIPT.png" alt="MIPT logo" className="h-20 w-auto object-contain" loading="lazy" decoding="async" />
           </div>
           <a
             href="mailto:smartshadowofficial@gmail.com"
