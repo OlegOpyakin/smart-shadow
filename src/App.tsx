@@ -448,8 +448,8 @@ const StickyShowcase = ({
   return (
     <section ref={containerRef} className="relative h-[300vh] bg-white dark:bg-black">
       <div className="sticky top-0 h-screen overflow-hidden relative">
-        <div className="h-full w-full max-w-7xl mx-auto px-6 md:px-8 flex flex-col md:flex-row md:items-center gap-3 md:gap-8 pt-16 pb-4 md:pt-0 md:pb-0">
-          <div className="w-full md:w-1/2 h-[38vh] md:h-[80vh] shrink-0 md:shrink min-w-0 flex items-center justify-center">
+        <div className="h-full w-full max-w-7xl mx-auto px-6 md:px-8 flex flex-col md:flex-row md:items-center gap-2 md:gap-8 pt-16 pb-3 md:pt-0 md:pb-0">
+          <div className="w-full md:w-1/2 flex-1 min-h-0 md:flex-none md:h-[80vh] min-w-0 flex items-center justify-center">
             {shouldLoad3D ? (
               <Suspense
                 fallback={
@@ -467,9 +467,9 @@ const StickyShowcase = ({
           <div className="md:hidden flex justify-center shrink-0 pointer-events-none">
             <ScrollDownHint lang={lang} label={t('scrollDown')} />
           </div>
-          <div className="w-full md:w-1/2 relative min-h-0 flex-1 md:flex-none md:h-80 min-w-0">
+          <div className="w-full md:w-1/2 relative shrink-0 h-[12.5rem] md:h-80 min-w-0">
 
-            <motion.div style={{ opacity: opacity1 }} className="absolute inset-0 flex flex-col justify-center">
+            <motion.div style={{ opacity: opacity1 }} className="absolute inset-0 flex flex-col justify-start md:justify-center">
               <div className="min-h-[12rem] md:min-h-[16rem]">
                 <AnimatePresence mode="wait">
                   <motion.h3
@@ -498,7 +498,7 @@ const StickyShowcase = ({
               </div>
             </motion.div>
 
-            <motion.div style={{ opacity: opacity2 }} className="absolute inset-0 flex flex-col justify-center">
+            <motion.div style={{ opacity: opacity2 }} className="absolute inset-0 flex flex-col justify-start md:justify-center">
               <div className="min-h-[12rem] md:min-h-[16rem]">
                 <AnimatePresence mode="wait">
                   <motion.h3
@@ -527,7 +527,7 @@ const StickyShowcase = ({
               </div>
             </motion.div>
 
-            <motion.div style={{ opacity: opacity3 }} className="absolute inset-0 flex flex-col justify-center">
+            <motion.div style={{ opacity: opacity3 }} className="absolute inset-0 flex flex-col justify-start md:justify-center">
               <div className="min-h-[12rem] md:min-h-[16rem]">
                 <AnimatePresence mode="wait">
                   <motion.h3
