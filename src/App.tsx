@@ -378,7 +378,7 @@ const ScrollDownHint = ({
   lang: 'en' | 'ru';
   label: string;
 }) => (
-  <div className="flex flex-col items-center px-4 py-2 md:px-5 md:py-3 rounded-full border border-gray-200/80 dark:border-white/15 bg-white/70 dark:bg-white/5 backdrop-blur-md shadow-sm">
+  <div className="flex flex-col items-center">
     <AnimatePresence mode="wait">
       <motion.p
         key={lang + 'scrollHint'}
@@ -386,7 +386,7 @@ const ScrollDownHint = ({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.25 }}
-        className="text-[11px] md:text-xs tracking-[0.32em] uppercase text-gray-500 dark:text-gray-300 font-medium"
+        className="text-xl text-gray-500 dark:text-gray-400"
       >
         {label}
       </motion.p>
@@ -395,7 +395,7 @@ const ScrollDownHint = ({
       animate={{ y: [0, 6, 0] }}
       transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
     >
-      <ChevronDown className="w-4 h-4 mt-1 text-gray-400 dark:text-gray-300" strokeWidth={1.5} />
+      <ChevronDown className="w-5 h-5 mt-1 text-gray-400 dark:text-gray-500" strokeWidth={1.5} />
     </motion.div>
   </div>
 );
@@ -444,7 +444,6 @@ const StickyShowcase = ({
   const opacity1 = useTransform(scrollYProgress, [0, 0.33, 0.4], [1, 1, 0]);
   const opacity2 = useTransform(scrollYProgress, [0.3, 0.4, 0.66, 0.73], [0, 1, 1, 0]);
   const opacity3 = useTransform(scrollYProgress, [0.63, 0.73, 1], [0, 1, 1]);
-  const scrollHintOpacity = useTransform(scrollYProgress, [0, 0.28], [1, 0]);
 
   return (
     <section ref={containerRef} className="relative h-[300vh] bg-white dark:bg-black">
@@ -465,12 +464,9 @@ const StickyShowcase = ({
               <div className="w-full h-full" aria-hidden />
             )}
           </div>
-          <motion.div
-            style={{ opacity: scrollHintOpacity }}
-            className="md:hidden flex justify-center shrink-0 pointer-events-none"
-          >
+          <div className="md:hidden flex justify-center shrink-0 pointer-events-none">
             <ScrollDownHint lang={lang} label={t('scrollDown')} />
-          </motion.div>
+          </div>
           <div className="w-full md:w-1/2 relative min-h-0 flex-1 md:h-80 md:flex-none">
 
             <motion.div style={{ opacity: opacity1 }} className="absolute inset-0 flex flex-col justify-center">
@@ -561,12 +557,9 @@ const StickyShowcase = ({
             </motion.div>
           </div>
         </div>
-        <motion.div
-          style={{ opacity: scrollHintOpacity }}
-          className="hidden md:flex absolute bottom-10 left-0 right-0 z-10 justify-center pointer-events-none"
-        >
+        <div className="hidden md:flex absolute bottom-10 left-0 right-0 z-10 justify-center pointer-events-none">
           <ScrollDownHint lang={lang} label={t('scrollDown')} />
-        </motion.div>
+        </div>
       </div>
     </section>
   );
