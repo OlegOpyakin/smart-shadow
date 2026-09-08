@@ -1,6 +1,5 @@
-import { Canvas, useThree } from '@react-three/fiber';
-import { Suspense, useEffect, useState } from 'react';
-import * as THREE from 'three';
+import { Canvas } from '@react-three/fiber';
+import { Suspense } from 'react';
 import Umbrella3D from './Umbrella3D';
 
 interface Props {
@@ -29,30 +28,7 @@ const Lighting = ({ theme }: { theme: string }) => {
   );
 };
 
-const AdaptiveCamera = ({ mobile }: { mobile: boolean }) => {
-  const { camera } = useThree();
-  useEffect(() => {
-    camera.position.set(0, mobile ? 0.8 : 1.2, mobile ? 5.4 : 8);
-    const perspective = camera as THREE.PerspectiveCamera;
-    if (perspective.isPerspectiveCamera) {
-      perspective.fov = mobile ? 40 : 50;
-      perspective.updateProjectionMatrix();
-    }
-  }, [camera, mobile]);
-  return null;
-};
-
 export default function Umbrella3DScene({ progress, theme }: Props) {
-  const [mobile, setMobile] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 767px)');
-    const sync = () => setMobile(mq.matches);
-    sync();
-    mq.addEventListener('change', sync);
-    return () => mq.removeEventListener('change', sync);
-  }, []);
-
   return (
     <Suspense fallback={
       <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -65,7 +41,6 @@ export default function Umbrella3DScene({ progress, theme }: Props) {
         gl={{ alpha: true }}
         style={{ background: 'transparent' }}
       >
-        <AdaptiveCamera mobile={mobile} />
         <Lighting theme={theme} />
         <Umbrella3D scrollProgress={progress} />
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.5, 0]} receiveShadow>
