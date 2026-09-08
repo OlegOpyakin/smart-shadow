@@ -371,6 +371,35 @@ const ScrollToTopButton = ({
   );
 };
 
+const ScrollDownHint = ({
+  lang,
+  label,
+}: {
+  lang: 'en' | 'ru';
+  label: string;
+}) => (
+  <div className="flex flex-col items-center px-4 py-2 md:px-5 md:py-3 rounded-full border border-gray-200/80 dark:border-white/15 bg-white/70 dark:bg-white/5 backdrop-blur-md shadow-sm">
+    <AnimatePresence mode="wait">
+      <motion.p
+        key={lang + 'scrollHint'}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.25 }}
+        className="text-[11px] md:text-xs tracking-[0.32em] uppercase text-gray-500 dark:text-gray-300 font-medium"
+      >
+        {label}
+      </motion.p>
+    </AnimatePresence>
+    <motion.div
+      animate={{ y: [0, 6, 0] }}
+      transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+    >
+      <ChevronDown className="w-4 h-4 mt-1 text-gray-400 dark:text-gray-300" strokeWidth={1.5} />
+    </motion.div>
+  </div>
+);
+
 // ========================
 //  STICKY SHOWCASE SECTION
 // ========================
@@ -419,34 +448,9 @@ const StickyShowcase = ({
 
   return (
     <section ref={containerRef} className="relative h-[300vh] bg-white dark:bg-black">
-      <div className="sticky top-0 h-screen flex items-center overflow-hidden relative">
-        <motion.div
-          style={{ opacity: scrollHintOpacity }}
-          className="absolute bottom-6 md:bottom-10 left-0 right-0 z-10 flex justify-center pointer-events-none"
-        >
-          <div className="flex flex-col items-center px-5 py-3 rounded-full border border-gray-200/80 dark:border-white/15 bg-white/70 dark:bg-white/5 backdrop-blur-md shadow-sm">
-            <AnimatePresence mode="wait">
-              <motion.p
-                key={lang + 'scrollHint'}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.25 }}
-                className="text-[11px] md:text-xs tracking-[0.32em] uppercase text-gray-500 dark:text-gray-300 font-medium"
-              >
-                {t('scrollDown')}
-              </motion.p>
-            </AnimatePresence>
-            <motion.div
-              animate={{ y: [0, 6, 0] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
-            >
-              <ChevronDown className="w-4 h-4 mt-1.5 text-gray-400 dark:text-gray-300" strokeWidth={1.5} />
-            </motion.div>
-          </div>
-        </motion.div>
-        <div className="w-full max-w-7xl mx-auto px-6 md:px-8 flex flex-col md:flex-row items-center gap-12 md:gap-16">
-          <div className="w-full md:w-1/2 h-[55vh] md:h-[80vh] mt-20 md:mt-0 flex items-center justify-center">
+      <div className="sticky top-0 h-screen overflow-hidden relative">
+        <div className="h-full w-full max-w-7xl mx-auto px-6 md:px-8 flex flex-col md:flex-row md:items-center gap-3 md:gap-16 pt-16 pb-4 md:pt-0 md:pb-0">
+          <div className="w-full md:w-1/2 h-[38vh] md:h-[80vh] flex-shrink-0 flex items-center justify-center">
             {shouldLoad3D ? (
               <Suspense
                 fallback={
@@ -461,7 +465,13 @@ const StickyShowcase = ({
               <div className="w-full h-full" aria-hidden />
             )}
           </div>
-          <div className="w-full md:w-1/2 relative h-64 md:h-80">
+          <motion.div
+            style={{ opacity: scrollHintOpacity }}
+            className="md:hidden flex justify-center shrink-0 pointer-events-none"
+          >
+            <ScrollDownHint lang={lang} label={t('scrollDown')} />
+          </motion.div>
+          <div className="w-full md:w-1/2 relative min-h-0 flex-1 md:h-80 md:flex-none">
 
             <motion.div style={{ opacity: opacity1 }} className="absolute inset-0 flex flex-col justify-center">
               <div className="min-h-[12rem] md:min-h-[16rem]">
@@ -551,6 +561,12 @@ const StickyShowcase = ({
             </motion.div>
           </div>
         </div>
+        <motion.div
+          style={{ opacity: scrollHintOpacity }}
+          className="hidden md:flex absolute bottom-10 left-0 right-0 z-10 justify-center pointer-events-none"
+        >
+          <ScrollDownHint lang={lang} label={t('scrollDown')} />
+        </motion.div>
       </div>
     </section>
   );
