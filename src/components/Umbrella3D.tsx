@@ -45,12 +45,11 @@ export default function Umbrella3D({ scrollProgress }: Props) {
 
     useFrame(() => {
     if (ready && spinRef.current) {
-        const targetRotation = scrollProgress * 1.5 * Math.PI;
-        // плавное приближение (чем меньше 0.08, тем мягче)
+        const targetRotation = scrollProgress * Math.PI;
         spinRef.current.rotation.y = THREE.MathUtils.lerp(
         spinRef.current.rotation.y,
         targetRotation,
-        0.08
+        0.12
         );
     }
     });

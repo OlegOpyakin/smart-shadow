@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, lazy, Suspense } from 
 import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion';
 import {
   Sun, Moon, Umbrella, Wrench, Cpu,
-  X, Mail, Send, ArrowUp, Users, Palette,
+  X, Mail, Send, ArrowUp, Users, Palette, ChevronDown,
 } from 'lucide-react';
 
 const Umbrella3DScene = lazy(() => import('./components/Umbrella3DScene'));
@@ -108,6 +108,7 @@ const translations = {
     footer: '© 2026 Smart Shadow',
     qrTitle: 'Join our Telegram channel',
     loadingWebsite: 'Loading website...',
+    scrollDown: 'Scroll down',
   },
   ru: {
     heroTitle: 'Smart Shadow.',
@@ -140,6 +141,7 @@ const translations = {
     footer: '© 2026 Smart Shadow',
     qrTitle: 'Присоединяйтесь к нашему Телеграм-каналу',
     loadingWebsite: 'Загрузка сайта...',
+    scrollDown: 'Листайте вниз',
   },
 };
 
@@ -413,10 +415,36 @@ const StickyShowcase = ({
   const opacity1 = useTransform(scrollYProgress, [0, 0.33, 0.4], [1, 1, 0]);
   const opacity2 = useTransform(scrollYProgress, [0.3, 0.4, 0.66, 0.73], [0, 1, 1, 0]);
   const opacity3 = useTransform(scrollYProgress, [0.63, 0.73, 1], [0, 1, 1]);
+  const scrollHintOpacity = useTransform(scrollYProgress, [0, 0.28], [1, 0]);
 
   return (
     <section ref={containerRef} className="relative h-[300vh] bg-white dark:bg-black">
-      <div className="sticky top-0 h-screen flex items-center overflow-hidden">
+      <div className="sticky top-0 h-screen flex items-center overflow-hidden relative">
+        <motion.div
+          style={{ opacity: scrollHintOpacity }}
+          className="absolute bottom-6 md:bottom-10 left-0 right-0 z-10 flex justify-center pointer-events-none"
+        >
+          <div className="flex flex-col items-center px-5 py-3 rounded-full border border-gray-200/80 dark:border-white/15 bg-white/70 dark:bg-white/5 backdrop-blur-md shadow-sm">
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={lang + 'scrollHint'}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                className="text-[11px] md:text-xs tracking-[0.32em] uppercase text-gray-500 dark:text-gray-300 font-medium"
+              >
+                {t('scrollDown')}
+              </motion.p>
+            </AnimatePresence>
+            <motion.div
+              animate={{ y: [0, 6, 0] }}
+              transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <ChevronDown className="w-4 h-4 mt-1.5 text-gray-400 dark:text-gray-300" strokeWidth={1.5} />
+            </motion.div>
+          </div>
+        </motion.div>
         <div className="w-full max-w-7xl mx-auto px-6 md:px-8 flex flex-col md:flex-row items-center gap-12 md:gap-16">
           <div className="w-full md:w-1/2 h-[55vh] md:h-[80vh] mt-20 md:mt-0 flex items-center justify-center">
             {shouldLoad3D ? (
